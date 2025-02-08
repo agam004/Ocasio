@@ -1,0 +1,43 @@
+body {
+    height: 100%;
+    background-image: url('../images/background.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+}
+
+
+.form-container {
+    background-color: rgba(255, 255, 255, 0.281); /* Semi-transparent white */
+    backdrop-filter: blur(10px); /* Blur effect */
+    border-radius: 15px;
+    padding: 4rem;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+font-size: 1.3rem;}
+
+.custom-heading {
+    position: absolute;
+    top: 30px; /* Adjust as needed */
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 2.5rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.form-label {
+    width: 100px; /* Set a fixed width for labels */
+    margin-right: 1rem;
+    text-align: right;
+}
+
+.form-control {
+    flex: 1;
+}
+
