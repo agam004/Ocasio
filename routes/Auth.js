@@ -7,31 +7,39 @@ router.get('/signup', (req, res) => {
     res.render('signup'); // Assumes you have a views/login.ejs file
   });
 
-// Signup POST route that stores the password as plain text
-router.post('/signup', async (req, res) => {
-  const { email, password, role } = req.body;
-  try {
-    // Check if user already exists
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).send('User already exists');
-    }
-    
-    // Create new user with plain text password
-    const newUser = new User({
-      email,
-      password,  // storing plain text password
-      role: role || 'customer'
-    });
-    
-    await newUser.save();
-    res.redirect('/login');  // Redirect after successful signup
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Error creating user');
-  }
-});
+  const ADMIN_PIN = '1234';  // Set a specific PIN for admin users
 
+  router.post('/signup', async (req, res) => {
+    const { name, email, password, role, adminPin } = req.body;
+    
+    try {
+      // Check if user already exists
+      const existingUser = await User.findOne({ email });
+      if (existingUser) {
+        return res.status(400).send('User already exists');
+      }
+  
+      // If role is admin, check if the admin PIN is correct
+      if (role === 'admin' && adminPin !== ADMIN_PIN) {
+        return res.status(400).send('Invalid Admin PIN');
+      }
+  
+      // Create new user with plain text password
+      const newUser = new User({
+        name,
+        email,
+        password,  // storing plain text password
+        role: role || 'customer'
+      });
+  
+      await newUser.save();
+      res.redirect('/login');  // Redirect after successful signup
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error creating user');
+    }
+  });
+  
 
 
 router.get('/login', (req, res) => {
@@ -59,7 +67,12 @@ router.post('/login', async (req, res) => {
       } else if (user.role === 'admin') {
         return res.redirect('/admin-dashboard');
       }
-      
+
+      // Set session to indicate that the user is logged in
+      req.session.login = true;
+      req.session.username = user.name;
+      console.log('User logged in:', user.name);
+
       // Default redirect for customer
       res.redirect('/');
       

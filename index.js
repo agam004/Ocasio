@@ -4,6 +4,7 @@ require('dotenv').config(); // Load environment variables from .env file
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+const session = require('express-session');
 
 let login = false;
 
@@ -18,6 +19,13 @@ mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology
 // Middleware to parse incoming requests
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// Use session to store user login state
+app.use(session({
+  secret: 'your-secret-key', // Use a secret key for the session
+  resave: false,
+  saveUninitialized: true
+}));
 
 // Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, 'public')));

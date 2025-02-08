@@ -1,12 +1,16 @@
 const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
+  name: {
+    type: String,
+    required: true,
+  },
   email: {
     type: String,
     required: true,
     unique: true,
   },
-  // Storing plain text password (not recommended)
+ 
   password: {
     type: String,
     required: true,
