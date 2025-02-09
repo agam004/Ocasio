@@ -1,0 +1,71 @@
+/* Global Styles */
+body {
+    background-color: #9d9db6c4; /* Dark Navy Blue */
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Header and Title */
+h1 {
+    font-family: 'Lora', serif;
+    font-weight: 700;
+    font-size: 2.5rem;
+    color: #87cfeb; /* Sky Blue */
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+/* Card Styling */
+.card {
+    border-radius: 15px; /* Rounded corners */
+    padding: 40px; /* Increased padding */
+    background-color: rgb(152, 160, 172); /* Dark semi-transparent background */
+    box-shadow: 0 8px 16px rgba(255, 255, 255, 0.2); /* Soft shadow for depth */
+}
+
+/* Card Text */
+.card-body {
+    color: #f0f0f0;
+}
+
+.card-text {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+}
+
+/* Buttons */
+.btn-primary {
+    background-color: #87CEEB; /* Sky Blue */
+    border-color: #87CEEB;
+    font-size: 1.1rem;
+    padding: 10px 20px;
+    border-radius: 25px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #add8e6;
+    border-color: #add8e6;
+    transform: translateY(-2px);
+}
+
+/* Footer Styling */
+footer {
+    background-color: #121244;
+    color: #f0f0f0;
+}
+
+footer p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    h1 {
+        font-size: 2rem; /* Slightly smaller title for smaller screens */
+    }
+    
+    .card {
+        padding: 30px;
+    }
+}

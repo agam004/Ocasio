@@ -1,4 +1,4 @@
-// index.js
+
 require('dotenv').config(); // Load environment variables from .env file
 
 const express = require('express');
@@ -6,10 +6,13 @@ const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');
 
-let login = false;
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // Connect to MongoDB Atlas using the connection string from .env
 mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -17,12 +20,11 @@ mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology
   .catch(err => console.error('Error connecting Database:', err));
 
 // Middleware to parse incoming requests
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+
 
 // Use session to store user login state
 app.use(session({
-  secret: 'your-secret-key', // Use a secret key for the session
+  secret: 'verySecretKey', // Use a secret key for the session
   resave: false,
   saveUninitialized: true
 }));
@@ -35,19 +37,21 @@ app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
 // Example Routes
-// (Create these route files in the /routes directory or replace with your own logic)
-const authRoutes = require('./routes/Auth');       // Handles /login, /signup, etc.
-// const eventsRoutes = require('./routes/events');   // Handles /events and event details
-// const dashboardRoutes = require('./routes/dashboard'); // Handles dashboard logic
-
+const authRoutes = require('./routes/Auth');
+const adminRoutes = require('./routes/admin');
+const eventRoutes = require('./routes/events');
 // Use the route files for route handling
 app.use('/', authRoutes);
-// app.use('/', eventsRoutes);
-// app.use('/', dashboardRoutes);
+app.use('/', adminRoutes);
+app.use('/', eventRoutes);
 
-// Home page route (e.g., index.ejs)
+// Home page route (only accessible if logged in)
 app.get('/', (req, res) => {
-  res.render('index'); // Renders views/index.ejs
+  if (req.session.login) {
+    res.render('index'); // Render homepage if logged in
+  } else {
+    res.redirect('/login'); // Redirect to login if not logged in
+  }
 });
 
 // Start the server

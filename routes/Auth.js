@@ -62,10 +62,9 @@ router.post('/login', async (req, res) => {
       }
       
       // Check user type and redirect accordingly
-      if (user.role === 'manager') {
-        return res.redirect('/manager-dashboard');
-      } else if (user.role === 'admin') {
-        return res.redirect('/admin-dashboard');
+      if (user.role === 'admin') {
+        req.session.isAdmin = true; 
+        return res.redirect('/admin/create-event');
       }
 
       // Set session to indicate that the user is logged in
