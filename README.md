@@ -2,6 +2,12 @@
 
 Occasio is a web-based event management platform designed to help small event managers host events, and people can book events, track their scheduling, and manage ticket bookings efficiently. This platform aims to simplify event management, allowing users to seamlessly explore and engage with events happening around them.
 
+## Installation Steps
+-  Download and extract zip file.
+-  open folder in vs code
+-  open terminal and run 'npm install'
+-  After that in same terminal run 'nodemon start'
+-  open link provide in terminal or open in browser 'http://localhost:3000/'
 ## Table of Contents
 
 - [Project Overview](#project-overview)
