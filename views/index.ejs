@@ -10,8 +10,16 @@
 </head>
 <body>
 
-    <!-- Navigation Bar -->
-    <%- include('navbar.ejs') %>
+    <% if (user) { %>
+        <% if (user.role === 'admin') { %>
+            <%- include('admin-nav.ejs') %>
+        <% } else { %>
+            <%- include('logged-in-nav.ejs') %>
+        <% } %>
+    <% } else { %>
+        <%- include('navbar.ejs') %>
+    <% } %>
+    
 
     <!-- Hero Section -->
     <header class="hero bg-dark text-white text-center py-5">
@@ -26,11 +34,18 @@
     <section class="container my-5">
         <h2 class="text-center mb-4">Upcoming Events</h2>
         <div class="row">
+            <% if (events && events.length === 0) { %> <!-- Check if events is an array and has no elements -->
+                <div class="col">
+                    <div class="alert alert-info" role="alert">
+                        No events found.
+                    </div>
+                </div>
+            <% } %>
+            
             <% events.forEach(event => { %> <!-- Loop through the events array -->
                 <div class="col-md-4">
                     <div class="card">
-                        <!-- Use the event image URL and event details dynamically -->
-                        <img src="<%= event.imageUrl || '../images/event-default.jpg' %>" class="card-img-top" alt="<%= event.title %>">
+                        <img src="<%= event.imageUrl %>" class="card-img-top" alt="<%= event.title %>">
                         <div class="card-body">
                             <h5 class="card-title"><%= event.title %></h5>
                             <p class="card-text"><%= event.description %></p>

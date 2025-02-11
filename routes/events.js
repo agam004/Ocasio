@@ -7,12 +7,14 @@ const Events = require('../models/Events');
 router.get('/', async (req, res) => {
     try {
         const events = await Events.find();  // Fetch all events from database
-        res.render('index', { events });     // Render home.ejs and pass events to it
+        res.render('index', { events, user: req.session.user || null }); // Pass user session
+        console.log('Session Data on Home Page:', req.session.user);
     } catch (err) {
         console.error('Error fetching events:', err);
         res.status(500).send('Error fetching events');
     }
 });
+
 
 // Route to show a specific event page when clicked
 router.get('/event/:id', async (req, res) => {

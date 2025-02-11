@@ -1,12 +1,9 @@
-
-require('dotenv').config(); // Load environment variables from .env file
+require('dotenv').config(); // Load environment variables
 
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');
-
-
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -19,40 +16,35 @@ mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology
   .then(() => console.log('Connected to Database'))
   .catch(err => console.error('Error connecting Database:', err));
 
-// Middleware to parse incoming requests
-
-
-// Use session to store user login state
+// Configure session middleware
 app.use(session({
-  secret: 'verySecretKey', // Use a secret key for the session
+  secret: 'verySecretKey', 
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: true,
+  cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // Ensure session persists
 }));
 
-// Serve static files from the "public" directory
+// Middleware to make user available in all routes
+app.use((req, res, next) => {
+  res.locals.user = req.session.user || null;
+  next();
+});
+
+// Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Set EJS as the templating engine and set views folder
+// Set EJS as templating engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Example Routes
+// Import and use routes
 const authRoutes = require('./routes/Auth');
 const adminRoutes = require('./routes/admin');
 const eventRoutes = require('./routes/events');
-// Use the route files for route handling
+
 app.use('/', authRoutes);
 app.use('/', adminRoutes);
 app.use('/', eventRoutes);
-
-// Home page route (only accessible if logged in)
-app.get('/', (req, res) => {
-  if (req.session.login) {
-    res.render('index'); // Render homepage if logged in
-  } else {
-    res.redirect('/login'); // Redirect to login if not logged in
-  }
-});
 
 // Start the server
 app.listen(PORT, () => {

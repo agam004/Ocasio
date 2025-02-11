@@ -19,6 +19,9 @@ router.post('/admin/create-event', adminAuth, async (req, res) => {
     if (!title || !description || !date) {
         return res.status(400).send("All fields are required");
     }
+     if (imageUrl = "") {
+        imageUrl = '../images/event-default.jpg';
+    }
 
     try {
         const newEvent = new Events({ title, description, date, imageUrl });
