@@ -8,6 +8,7 @@ Occasio is a web-based event management platform designed to help small event ma
 -  open terminal and run 'npm install'
 -  After that in same terminal run 'nodemon start'
 -  open link provide in terminal or open in browser 'http://localhost:3000/'
+
 ## Table of Contents
 
 - [Project Overview](#project-overview)
