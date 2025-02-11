@@ -4,5 +4,5 @@ module.exports = (req, res, next) => {
         return next();  // Proceed to the next route handler
     }
     
-    return res.redirect('/login');  // Redirect to login if not an admin
+    return res.redirect('/');  // Redirect to login if not an admin
 };

@@ -1,0 +1,35 @@
+<% if (user) { %>
+    <% if (user.role === 'admin') { %>
+        <%- include('admin-nav.ejs') %>
+    <% } else { %>
+        <%- include('logged-in-nav.ejs') %>
+    <% } %>
+<% } else { %>
+    <%- include('navbar.ejs') %>
+<% } %>
+
+<!-- About Section -->
+<section class="about py-5">
+  <div class="container">
+    <div class="row">
+      <div class="col-md-6">
+        <h2>About Us</h2>
+        <p>Welcome to Occasio! We are passionate about bringing amazing events to you, helping you discover experiences that make life exciting. Whether you're a music lover, an adventurer, or someone who enjoys unique experiences, we have something for you.</p>
+        <p>Our platform is designed to provide seamless event discovery, booking, and management. Join us and explore the world of events like never before!</p>
+        <p>Meet Our Team :
+          <ul>
+            <li><a href="https://www.linkedin.com/in/guragampreet-singh/" target="_blank">Guragampreet Singh (Team Lead)</a></li>
+            <li>Prabhnoor Kaur</li>
+            <li>Elaf Al Muhalal</li>
+            <li>Vivek Sanjalia</li>
+          </ul>
+        </p>
+      </div>
+      <div class="col-md-6">
+        <img src="https://img.freepik.com/free-photo/social-integration-working-team_23-2149341101.jpg?t=st=1739308304~exp=1739311904~hmac=5803a3422132200656b69ba62639e9196fd34595c352941390402ab8ae666548&w=1380" alt="About Us" class="img-fluid">
+      </div>
+    </div>
+  </div>
+</section>
+
+<%- include('footer.ejs') %>

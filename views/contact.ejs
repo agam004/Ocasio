@@ -1,0 +1,49 @@
+<% if (user) { %>
+    <% if (user.role === 'admin') { %>
+        <%- include('admin-nav.ejs') %>
+    <% } else { %>
+        <%- include('logged-in-nav.ejs') %>
+    <% } %>
+<% } else { %>
+    <%- include('navbar.ejs') %>
+<% } %>
+
+<!-- Contact Section -->
+<section class="contact py-5">
+  <div class="container">
+    <h2 class="text-center mb-4">Contact Us</h2>
+    <div class="row">
+      <div class="col-md-6">
+        <h4>Get In Touch</h4>
+        <p>Have questions or need assistance? Feel free to reach out to us through the form below, and we’ll get back to you as soon as possible.</p>
+
+        <!-- Contact Form -->
+        <form action="/send-message" method="POST">
+          <div class="form-group">
+            <label for="name">Your Name</label>
+            <input type="text" class="form-control" id="name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="email">Your Email</label>
+            <input type="email" class="form-control" id="email" name="email" required>
+          </div>
+          <div class="form-group">
+            <label for="message">Your Message</label>
+            <textarea class="form-control" id="message" name="message" rows="4" required></textarea>
+          </div>
+          <button type="submit" class="btn btn-primary mt-2">Send Message</button>
+        </form>
+      </div>
+      <div class="col-md-6">
+        <h4>Our Address - Conestoga College</h4>
+        <h5>Waterloo Campus - Computer Programming <br>Section -2 Win2025</h5>
+        <p>108 University Ave E, Waterloo, ON N2J 2W2</p>
+        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Conestoga_College_logo.svg/1200px-Conestoga_College_logo.svg.png" alt="Conestoga College Logo" width="300">
+      </div>
+      
+    </div>
+  </div>
+</section>
+
+<%- include('footer.ejs') %>
+

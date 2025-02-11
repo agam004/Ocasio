@@ -46,6 +46,12 @@ app.use('/', authRoutes);
 app.use('/', adminRoutes);
 app.use('/', eventRoutes);
 
+app.get('/about', (req, res) => {
+  res.render('about', { user: req.session.user || null });
+});
+app.get('/contact', (req, res) => {
+  res.render('contact', { user: req.session.user || null });
+});
 // Start the server
 app.listen(PORT, () => {
   console.log(`Hosted at http://localhost:${PORT}`);

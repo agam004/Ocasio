@@ -24,7 +24,8 @@ router.get('/event/:id', async (req, res) => {
         if (!event) {
             return res.status(404).send('Event not found');
         }
-        res.render('event', { event });  // Render event.ejs and pass the event data
+        res.render('event', { event, user: req.session.user || null  });
+        console.log('Session Data on Event Page:', req.session.user);
     } catch (err) {
         console.error('Error fetching event:', err);
         res.status(500).send('Error fetching event');

@@ -1,0 +1,27 @@
+<!-- views/edit-event.ejs -->
+
+<%- include('admin-nav.ejs') %>  <!-- Admin Navigation Bar -->
+
+<div class="container mt-4">
+  <h2>Edit Event</h2>
+  <form action="/admin/manage-event/<%= event._id %>" method="POST">
+    <div class="form-group">
+      <label for="title">Event Title</label>
+      <input type="text" class="form-control" id="title" name="title" value="<%= event.title %>" required>
+    </div>
+    <div class="form-group">
+      <label for="description">Event Description</label>
+      <textarea class="form-control" id="description" name="description" rows="3" required><%= event.description %></textarea>
+    </div>
+    <div class="form-group">
+      <label for="date">Event Date</label>
+      <input type="date" class="form-control" id="date" name="date" value="<%= event.date %>" required>
+    </div>
+    <div class="form-group">
+      <label for="imageUrl">Event Image URL</label>
+      <input type="text" class="form-control" id="imageUrl" name="imageUrl" value="<%= event.imageUrl %>">
+    </div>
+    <button type="submit" class="btn btn-primary mt-3">Update Event</button>
+  </form>
+</div>
+<%- include('footer.ejs') %>

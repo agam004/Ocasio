@@ -10,7 +10,15 @@
     <link rel="stylesheet" href="/css/style.css"> <!-- Custom Styles -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lora:wght@400;700&display=swap" rel="stylesheet">
 
-    <%- include('navbar.ejs') %>
+    <% if (user) { %>
+        <% if (user.role === 'admin') { %>
+            <%- include('admin-nav.ejs') %>
+        <% } else { %>
+            <%- include('logged-in-nav.ejs') %>
+        <% } %>
+    <% } else { %>
+        <%- include('navbar.ejs') %>
+    <% } %>
     <!-- Custom Styles -->
     <style>
         /* Full page background image section */
@@ -59,16 +67,16 @@
     <!-- Event Details Section with Background Image -->
     <section class="container-fluid event-section" style="background-image: url('<%= event.imageUrl %>');">
         <div class="event-card-container">
-            <div class="card event-card shadow-lg border-0 rounded">
+            <div class="card event-card shadow-lg border-0 rounded" style="background-color: rgba(255, 255, 255, 0.767);">
                 <div class="card-body">
                     <h1 class="text-primary mb-4"><%= event.title %></h1>
                     <p class="text-dark mb-4"><strong>Description:</strong> <%= event.description %></p>
                     <p class="text-dark mb-4"><strong>Date:</strong> <%= event.date.toLocaleDateString() %></p>
-                    <a href="/" class="btn btn-primary btn-lg">Back to Home</a>
                 </div>
             </div>
         </div>
     </section>
+    
 
     <!-- Footer -->
     <%- include('footer.ejs') %>
