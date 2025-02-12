@@ -1,5 +1,7 @@
 # Occasio - Event Management Platform
 Hosted at - https://occasio-655q.onrender.com/ (You may need to wait for a few seconds when starting initially)
+
+#
 Occasio is a web-based event management platform designed to help small event managers host events, and people can book events, track their scheduling, and manage ticket bookings efficiently. This platform aims to simplify event management, allowing users to seamlessly explore and engage with events happening around them.
 
 ## Installation Steps
