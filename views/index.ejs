@@ -43,9 +43,9 @@
             
             <% events.forEach(event => { %> <!-- Loop through the events array -->
                 <div class="col-md-4">
-                    <div class="card mb-4 shadow-lg rounded-3">
+                    <div class="card mb-4 rounded-3">
                         <div class="ratio ratio-16x9 img-container">
-                          <img src="<%= event.imageUrl %>" class="img-fluid object-fit-cover custom-hover" alt="<%= event.title %>">
+                            <a href="/event/<%= event._id %>"><img src="<%= event.imageUrl %>" class="img-fluid object-fit-cover custom-hover" alt="<%= event.title %>"></a>
                         </div>
                         <div class="card-body">
                           <h5 class="card-title"><%= event.title %></h5>

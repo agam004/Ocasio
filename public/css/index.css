@@ -11,4 +11,12 @@
   .custom-hover:hover {
     transform: scale(1.1);
   }
+  .card {
+    transition: box-shadow 0.3s ease;
+    cursor: pointer;
+  }
+  
+  .card:hover {
+    box-shadow: 0 15px 25px rgba(0, 0, 0, 0.3);
+  }
   
