@@ -32,8 +32,12 @@
           <td><%= event.title %></td>
           <td><%= event.date %></td>
           <td>
+            <form action="/admin/manage-event/<%= event._id %>" method="POST" class="d-inline">
+              <input type="hidden" name="_method" value="DELETE">
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+            <a href="/event/<%= event._id %>" class="btn btn-primary">View</a>
             <a href="/admin/manage-event/<%= event._id %>" class="btn btn-warning">Edit</a>
-          </td>
         </tr>
       <% }) %>
     </tbody>

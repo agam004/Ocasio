@@ -70,6 +70,7 @@ router.post('/login', async (req, res) => {
 
      // Store user details in session
      req.session.user = {
+      _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role

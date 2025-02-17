@@ -6,7 +6,11 @@ const eventSchema = new mongoose.Schema({
     date: { type: Date, required: true },
     imageUrl: { type: String ,
         default: '../images/event-default.jpg'
-    }, // Optional: For storing image URL related to event
+    }, 
+    capacity: { type: Number, required: true },
+    booked: { type: Number, default: 0 },
+    price: { type: Number, required: true },
+    location: { type: String, required: true },
 });
 
 const Event = mongoose.model('Events', eventSchema);

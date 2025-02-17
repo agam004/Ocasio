@@ -6,7 +6,7 @@ const path = require('path');
 const session = require('express-session');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -18,11 +18,31 @@ mongoose.connect(process.env.DB_URI, { useNewUrlParser: true, useUnifiedTopology
 
 // Configure session middleware
 app.use(session({
-  secret: 'verySecretKey', 
+  secret: '$5jhf8dk;sjf', // Secret used to sign session ID cookie
   resave: false,
   saveUninitialized: true,
   cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // Ensure session persists
 }));
+
+app.use((req, res, next) => {
+  if (!req.session.user) {
+    req.session.user = {
+        // _id: "67a82baa0f260e84dd78405e", //user._id,
+        // name: "Guragampreet Singh", //user.name,
+        // email: "yemor38831@shouxs.com", //user.email,
+        // role: "customer",//user.role
+
+        _id: '67a7f6854210d1431ab03c37',
+        name: 'Guragampreet Singh',
+        email: 'singhguragampreet@gmail.com',
+        role: 'admin'
+    };
+    req.session.login = true;
+    req.session.isAdmin = true;
+    console.log('Auto-logged in as Test User');
+  }
+  next();
+});
 
 // Middleware to make user available in all routes
 app.use((req, res, next) => {
@@ -41,10 +61,19 @@ app.set('views', path.join(__dirname, 'views'));
 const authRoutes = require('./routes/Auth');
 const adminRoutes = require('./routes/admin');
 const eventRoutes = require('./routes/events');
+const bookingRoutes = require('./routes/booking');
 
+app.use('/', bookingRoutes);
 app.use('/', authRoutes);
 app.use('/', adminRoutes);
 app.use('/', eventRoutes);
+
+// session.user = {
+//   _id: "67a82baa0f260e84dd78405e", //user._id,
+//   name: "Guragampreet Singh", //user.name,
+//   email: "yemor38831@shouxs.com", //user.email,
+//   role: "customer",//user.role
+// };
 
 app.get('/about', (req, res) => {
   res.render('about', { user: req.session.user || null });
@@ -56,3 +85,4 @@ app.get('/contact', (req, res) => {
 app.listen(PORT, () => {
   console.log(`Hosted at http://localhost:${PORT}`);
 });
+

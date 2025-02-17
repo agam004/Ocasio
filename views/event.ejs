@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><%= event.title %></title>
-    
+
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css"> <!-- Custom Styles -->
+    <link rel="stylesheet" href="/css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lora:wght@400;700&display=swap" rel="stylesheet">
-    
+
     <link rel="shortcut icon" href="../images/Occasio.png" type="image/x-icon">
 
     <% if (user) { %>
@@ -21,64 +21,94 @@
     <% } else { %>
         <%- include('navbar.ejs') %>
     <% } %>
-    <!-- Custom Styles -->
-    <style>
-        /* Full page background image section */
-        .event-section {
-            background-size: cover;
-            background-position: center;
-            height: 100vh;
-        }
 
-        /* Centering the card container */
-        .event-card-container {
+    <style>
+        /* Background Section */
+        .event-section {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            background: url('<%= event.imageUrl %>') no-repeat center center;
+            background-size: cover;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            padding: 20px;
         }
 
-        /* Card styling */
-        .event-card {
-            background-color: rgba(235, 235, 248, 0.603);
-            color: #000000;
-            max-width: 800px;
+        /* Dark Overlay */
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        /* Event Details Box */
+        .event-details {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
             padding: 40px;
-        }
-
-        /* Centering text in the card */
-        .event-card .card-body {
+            border-radius: 12px;
             text-align: center;
+            width: 100%;
+            max-width: 1000px;
+            z-index: 1;
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+            color: white;
         }
 
-        /* Text color */
-        .event-card .card-body p {
-            color: #000000;
+        .event-details h1 {
+            font-weight: 700;
+            color: white;
         }
 
-        /* Primary button styling */
-        .btn-primary {
-            background-color: #007bff;
-            border: none;
+        .event-details p {
+            font-size: 18px;
+        }
+
+        /* Booking Button */
+        .event-details .btn {
+            width: 100%;
+            padding: 12px;
+        }
+
+        /* Responsive Layout */
+        @media (max-width: 992px) {
+            .event-details {
+                width: 90%;
+            }
         }
     </style>
 </head>
-<body class="bg-dark text-light">
+<body>
 
-    <!-- Event Details Section with Background Image -->
-    <section class="container-fluid event-section" style="background-image: url('<%= event.imageUrl %>');">
-        <div class="event-card-container">
-            <div class="card event-card shadow-lg border-0 rounded" style="background-color: rgba(255, 255, 255, 0.767);">
-                <div class="card-body">
-                    <h1 class="text-primary mb-4"><%= event.title %></h1>
-                    <p class="text-dark mb-4"><strong>Description:</strong> <%= event.description %></p>
-                    <p class="text-dark mb-4"><strong>Date:</strong> <%= event.date.toLocaleDateString() %></p>
-                </div>
+    <!-- Event Section -->
+    <section class="event-section">
+        <div class="overlay"></div>
+        
+        <!-- Event Details (Centered & Stretched Box) -->
+        <div class="event-details">
+            <h1><%= event.title %></h1>
+            <p><strong>Date:</strong> <%= new Date(event.date).toLocaleDateString() %></p>
+            <p><strong>Description:</strong> <%= event.description %></p>
+            <p><strong>Price:</strong> $<%= event.price %></p>
+            <p><strong>Capacity:</strong> <%= event.capacity - event.booked %> / <%= event.capacity %></p>
+
+            <!-- Booking Button at Bottom -->
+            <div class="mt-4">
+                <% if (userBooking) { %>
+                    <a href="/bookings" class="btn btn-success btn-lg">⚙ Manage Booking</a>
+                <% } else if (user) { %>
+                    <a href="/book-event/<%= event._id %>" class="btn btn-primary btn-lg">🎟 Book Event</a>
+                <% } else { %>
+                    <a href="/login" class="btn btn-warning btn-lg">🔑 Login to Book</a>
+                <% } %>
             </div>
         </div>
     </section>
-    
 
     <!-- Footer -->
     <%- include('footer.ejs') %>

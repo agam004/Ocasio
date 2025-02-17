@@ -2,6 +2,7 @@
 const express = require('express');
 const router = express.Router();
 const Events = require('../models/Events');
+const Booking = require('../models/Booking');
 
 // Route to display all events on the homepage
 router.get('/', async (req, res) => {
@@ -19,13 +20,18 @@ router.get('/', async (req, res) => {
 // Route to show a specific event page when clicked
 router.get('/event/:id', async (req, res) => {
     const eventId = req.params.id;
+    const userId = req.session.user ? req.session.user._id : null;
+
     try {
-        const event = await Events.findById(eventId);  // Fetch event by ID
-        if (!event) {
-            return res.status(404).send('Event not found');
+        const event = await Events.findById(eventId);
+        if (!event) return res.status(404).send('Event not found');
+
+        let userBooking = null;
+        if (userId) {
+            userBooking = await Booking.findOne({ user: userId, event: eventId });
         }
-        res.render('event', { event, user: req.session.user || null  });
-        console.log('Session Data on Event Page:', req.session.user);
+
+        res.render('event', { event, user: req.session.user || null, userBooking });
     } catch (err) {
         console.error('Error fetching event:', err);
         res.status(500).send('Error fetching event');

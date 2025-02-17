@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Book Event - <%= event.title %></title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lora:wght@400;700&display=swap" rel="stylesheet">
+
+    <link rel="shortcut icon" href="../images/Occasio.png" type="image/x-icon">
+</head>
+<body class="bg-light">
+
+    <!-- Navbar -->
+    <% if (user) { %>
+        <% if (user.role === 'admin') { %>
+            <%- include('admin-nav.ejs') %>
+        <% } else { %>
+            <%- include('logged-in-nav.ejs') %>
+        <% } %>
+    <% } else { %>
+        <%- include('navbar.ejs') %>
+    <% } %>
+
+    <!-- Event Details Section -->
+    <div class="container mt-5">
+        <h2 class="text-center text-primary mb-4"><%= event.title %></h2>
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4>Book Your Tickets</h4>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Date:</strong> <%= new Date(event.date).toLocaleDateString() %></p>
+                        <p><strong>Location:</strong> <%= event.location %></p>
+                        <p><strong>Price:</strong> $<%= event.price %></p>
+                        <p><strong>Available Tickets:</strong> <%= event.capacity - event.booked %></p>
+
+                        <!-- Ticket Quantity Selection -->
+                        <form action="/book-event/<%= event._id %>" method="POST">
+                            <div class="mb-3">
+                                <label for="numTickets" class="form-label">Number of Tickets</label>
+                                <input type="number" class="form-control" id="numTickets" name="numTickets" min="1" max="<%= event.capacity - event.booked %>" required>
+                            </div>
+                        
+                            <!-- Display Ticket Price Per Ticket -->
+                            <div class="mb-3">
+                                <label class="form-label">Ticket Price (per ticket)</label>
+                                <input type="text" class="form-control" value="$<%= event.price %>" readonly>
+                            </div>
+                        
+                            <!-- Display Taxes -->
+                            <div class="mb-3">
+                                <label class="form-label">Tax (13%)</label>
+                                <input type="text" class="form-control" id="taxAmount" value="$<%= (event.price * 1 * 0.13).toFixed(2) %>" readonly>
+                            </div>
+                        
+                            <!-- Display Service Charges -->
+                            <div class="mb-3">
+                                <label class="form-label">Service Charge ($2 per ticket)</label>
+                                <input type="text" class="form-control" id="serviceCharge" value="$2.00" readonly>
+                            </div>
+                        
+                            <!-- Display Total Cost -->
+                            <div class="mb-3">
+                                <label class="form-label">Total Cost</label>
+                                <input type="text" class="form-control" id="totalCost" value="$<%= (event.price * 1 * 1.13 + 2).toFixed(2) %>" readonly>
+                            </div>
+                        
+                            <button type="submit" class="btn btn-success btn-lg w-100">🎟 Book Event</button>
+                        </form>
+                        
+                        
+                        
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <%- include('footer.ejs') %>
+
+    <!-- Optional Bootstrap JS (for better interactivity) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const pricePerTicket = JSON.stringify(event.price); // Ensure it's safely parsed
+        const taxRate = 0.13; 
+        const serviceChargePerTicket = 2;
+    
+        document.addEventListener("DOMContentLoaded", function () {
+            const numTicketsInput = document.getElementById("numTickets");
+            const taxAmountInput = document.getElementById("taxAmount");
+            const serviceChargeInput = document.getElementById("serviceCharge");
+            const totalCostInput = document.getElementById("totalCost");
+    
+            function updateCosts() {
+                let numTickets = parseInt(numTicketsInput.value) || 1; 
+                let taxAmount = numTickets * pricePerTicket * taxRate;
+                let serviceCharge = numTickets * serviceChargePerTicket;
+                let totalCost = (numTickets * pricePerTicket * (1 + taxRate)) + serviceCharge;
+    
+                taxAmountInput.value = `$${taxAmount.toFixed(2)}`;
+                serviceChargeInput.value = `$${serviceCharge.toFixed(2)}`;
+                totalCostInput.value = `$${totalCost.toFixed(2)}`;
+            }
+    
+            numTicketsInput.addEventListener("input", updateCosts);
+            updateCosts(); // Initialize values on page load
+        });
+    </script>
+
+</body>
+</html>
