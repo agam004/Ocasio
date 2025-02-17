@@ -14,10 +14,10 @@ router.get('/admin/create-event', adminAuth, (req, res) => {
 router.post('/admin/create-event', adminAuth, async (req, res) => {
     console.log(req.body); // Debugging
 
-    let { title, description, date, imageUrl, capacity, price, location } = req.body;
+    let { title, description, dateTime, imageUrl, capacity, price, location } = req.body;
 
     // Validation check
-    if (!title || !description || !date || !capacity || !price || !location) {
+    if (!title || !description || !dateTime || !capacity || !price || !location) {
         return res.status(400).send("All fields are required");
     }
     if (!imageUrl) {  
@@ -25,8 +25,11 @@ router.post('/admin/create-event', adminAuth, async (req, res) => {
     }
 
     try {
+        const localDate = new Date(dateTime);
+        const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
+
         const newEvent = new Events({ 
-            title, description, date, imageUrl, 
+            title, description, date:utcDate, imageUrl, 
             capacity, price, location, 
             booked: 0  // New event starts with zero bookings
         });
@@ -81,16 +84,18 @@ router.post('/admin/manage-event/:id', adminAuth, async (req, res) => {
     }
     
     // Otherwise, treat it as an update request
-    const { title, description, date, imageUrl, capacity, price, location } = req.body;
+    const { title, description, dateTime, imageUrl, capacity, price, location } = req.body;
     try {
         const event = await Events.findById(eventId);
         if (!event) {
             return res.status(404).send('Event not found');
         }
+        const newdate = new Date(dateTime);
+        const utcDate = new Date(newdate.getTime() - newdate.getTimezoneOffset() * 60000);
         // Update fields
         event.title = title || event.title;
         event.description = description || event.description;
-        event.date = date || event.date;
+        event.date = utcDate || event.date;
         event.imageUrl = imageUrl || event.imageUrl;
         event.capacity = capacity || event.capacity;
         event.price = price || event.price;

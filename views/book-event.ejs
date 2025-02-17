@@ -34,7 +34,7 @@
             <h4>Book Your Tickets</h4>
           </div>
           <div class="card-body">
-            <p><strong>Date:</strong> <%= new Date(event.date).toLocaleDateString() %></p>
+            <p><strong>Date:</strong> <%= new Date(event.date).toLocaleDateString('en-US', { timeZone: 'UTC' }) %></p>
             <p><strong>Location:</strong> <%= event.location %></p>
             <p><strong>Price:</strong> $<%= event.price %></p>
             <p><strong>Available Tickets:</strong> <%= event.capacity - event.booked %></p>

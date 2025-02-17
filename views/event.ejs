@@ -1,117 +1,122 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title><%= event.title %></title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= event.title %></title>
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lora:wght@400;700&display=swap" rel="stylesheet">
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&family=Lora:wght@400;700&display=swap" rel="stylesheet">
 
-    <link rel="shortcut icon" href="../images/Occasio.png" type="image/x-icon">
+  <link rel="shortcut icon" href="../images/Occasio.png" type="image/x-icon">
 
-    <% if (user) { %>
-        <% if (user.role === 'admin') { %>
-            <%- include('admin-nav.ejs') %>
-        <% } else { %>
-            <%- include('logged-in-nav.ejs') %>
-        <% } %>
+  <% if (user) { %>
+    <% if (user.role === 'admin') { %>
+      <%- include('admin-nav.ejs') %>
     <% } else { %>
-        <%- include('navbar.ejs') %>
+      <%- include('logged-in-nav.ejs') %>
     <% } %>
+  <% } else { %>
+    <%- include('navbar.ejs') %>
+  <% } %>
 
-    <style>
-        /* Background Section */
-        .event-section {
-            position: relative;
-            width: 100%;
-            height: 100vh;
-            background: url('<%= event.imageUrl %>') no-repeat center center;
-            background-size: cover;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-
-        /* Dark Overlay */
-        .overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-        }
-
-        /* Event Details Box */
-        .event-details {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            padding: 40px;
-            border-radius: 12px;
-            text-align: center;
-            width: 100%;
-            max-width: 1000px;
-            z-index: 1;
-            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
-            color: white;
-        }
-
-        .event-details h1 {
-            font-weight: 700;
-            color: white;
-        }
-
-        .event-details p {
-            font-size: 18px;
-        }
-
-        /* Booking Button */
-        .event-details .btn {
-            width: 100%;
-            padding: 12px;
-        }
-
-        /* Responsive Layout */
-        @media (max-width: 992px) {
-            .event-details {
-                width: 90%;
-            }
-        }
-    </style>
+  <style>
+    /* Background Section */
+    .event-section {
+      position: relative;
+      width: 100%;
+      min-height: 100vh;
+      background: url('<%= event.imageUrl %>') no-repeat center center;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    /* Dark Overlay */
+    .overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.6);
+    }
+    /* Event Details Box */
+    .event-details {
+      position: relative;
+      background: rgba(255, 255, 255, 0.2);
+      backdrop-filter: blur(10px);
+      padding: 40px;
+      border-radius: 12px;
+      text-align: center;
+      width: 100%;
+      max-width: 1000px;
+      z-index: 1;
+      box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.2);
+      color: white;
+    }
+    .event-details h1 {
+      font-weight: 700;
+      color: white;
+    }
+    .event-details p {
+      font-size: 18px;
+      margin-bottom: 0.75rem;
+    }
+    /* Booking Button */
+    .event-details .btn {
+      width: 100%;
+      padding: 12px;
+      margin-top: 1.5rem;
+    }
+    /* Responsive Layout */
+    @media (max-width: 992px) {
+      .event-details {
+        width: 90%;
+      }
+    }
+  </style>
 </head>
 <body>
+  <!-- Event Section -->
+  <section class="event-section">
+    <div class="overlay"></div>
+    
+    <!-- Event Details Box -->
+    <div class="event-details">
+      <h1><%= event.title %></h1>
+      <!-- Display date with full formatting including time -->
+      <p><strong>Date:</strong> 
+        <%= new Date(event.date).toLocaleString('en-US', { 
+              dateStyle: 'full', 
+              timeStyle: 'short',
+              timeZone: 'UTC'
+            }) %> <b><i>Local Time</i></b>
+      </p>
+      <p><strong>Description:</strong> <%= event.description %></p>
+      <p><strong>Location:</strong> <%= event.location %></p>
+      <p><strong>Price:</strong> $<%= event.price %></p>
+      <p><strong>Available Tickets:</strong> <%= event.capacity - event.booked %> / <%= event.capacity %></p>
 
-    <!-- Event Section -->
-    <section class="event-section">
-        <div class="overlay"></div>
-        
-        <!-- Event Details (Centered & Stretched Box) -->
-        <div class="event-details">
-            <h1><%= event.title %></h1>
-            <p><strong>Date:</strong> <%= new Date(event.date).toLocaleDateString('en-US', { timeZone: 'UTC' }) %></p>
-            <p><strong>Description:</strong> <%= event.description %></p>
-            <p><strong>Price:</strong> $<%= event.price %></p>
-            <p><strong>Capacity:</strong> <%= event.capacity - event.booked %> / <%= event.capacity %></p>
+      <!-- Booking Button -->
+      <div class="mt-4">
+        <% if (userBooking) { %>
+          <a href="/bookings" class="btn btn-success btn-lg">⚙ Manage Booking</a>
+        <% } else if (user && user.role === 'customer') { %>
+          <a href="/book-event/<%= event._id %>" class="btn btn-primary btn-lg">🎟 Book Event</a>
+        <% } else if (user && user.role === 'admin') { %>
+          <a href="/admin/manage-event/<%= event._id %>" class="btn btn-primary btn-lg">Manage Event</a>
+        <% } else { %>
+          <a href="/login" class="btn btn-warning btn-lg">🔑 Login to Book</a>
+        <% } %>
+      </div>
+    </div>
+  </section>
 
-            <!-- Booking Button at Bottom -->
-            <div class="mt-4">
-                <% if (userBooking) { %>
-                    <a href="/bookings" class="btn btn-success btn-lg">⚙ Manage Booking</a>
-                <% } else if (user) { %>
-                    <a href="/book-event/<%= event._id %>" class="btn btn-primary btn-lg">🎟 Book Event</a>
-                <% } else { %>
-                    <a href="/login" class="btn btn-warning btn-lg">🔑 Login to Book</a>
-                <% } %>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <%- include('footer.ejs') %>
-
+  <!-- Footer -->
+  <%- include('footer.ejs') %>
 </body>
 </html>
