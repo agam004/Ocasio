@@ -92,7 +92,7 @@
         <!-- Event Details (Centered & Stretched Box) -->
         <div class="event-details">
             <h1><%= event.title %></h1>
-            <p><strong>Date:</strong> <%= new Date(event.date).toLocaleDateString() %></p>
+            <p><strong>Date:</strong> <%= new Date(event.date).toLocaleDateString('en-US', { timeZone: 'UTC' }) %></p>
             <p><strong>Description:</strong> <%= event.description %></p>
             <p><strong>Price:</strong> $<%= event.price %></p>
             <p><strong>Capacity:</strong> <%= event.capacity - event.booked %> / <%= event.capacity %></p>

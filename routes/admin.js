@@ -51,6 +51,20 @@ router.get('/admin/manage-events', adminAuth, async (req, res) => {
 });
 
 // Get event details for editing (GET)
+router.get('/admin/manage-event/:id', adminAuth, async (req, res) => {
+    const eventId = req.params.id;
+    try {
+      const event = await Events.findById(eventId);
+      if (!event) {
+        return res.status(404).send('Event not found');
+      }
+      res.render('edit-event', { event });
+    } catch (err) {
+      console.error('Error fetching event:', err);
+      res.status(500).send('Error fetching event');
+    }
+  });
+  
 // Update or delete event details (POST)
 router.post('/admin/manage-event/:id', adminAuth, async (req, res) => {
     const eventId = req.params.id;

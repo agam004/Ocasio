@@ -24,25 +24,33 @@ app.use(session({
   cookie: { secure: false, maxAge: 24 * 60 * 60 * 1000 } // Ensure session persists
 }));
 
-app.use((req, res, next) => {
-  if (!req.session.user) {
+//For testing purposes only
+app.get('/set-user', (req, res) => {
+  const role = req.query.role;
+  
+  if (role === 'admin') {
     req.session.user = {
-        // _id: "67a82baa0f260e84dd78405e", //user._id,
-        // name: "Guragampreet Singh", //user.name,
-        // email: "yemor38831@shouxs.com", //user.email,
-        // role: "customer",//user.role
-
-        _id: '67a7f6854210d1431ab03c37',
-        name: 'Guragampreet Singh',
-        email: 'singhguragampreet@gmail.com',
-        role: 'admin'
+      _id: '67a7f6854210d1431ab03c37',
+      name: 'Guragampreet Singh',
+      email: 'singhguragampreet@gmail.com',
+      role: 'admin'
     };
-    req.session.login = true;
     req.session.isAdmin = true;
-    console.log('Auto-logged in as Test User');
+  } else if (role === 'customer') {
+    req.session.user = {
+      _id: '67a82baa0f260e84dd78405e',
+      name: 'Guragampreet Singh',
+      email: 'yemor38831@shouxs.com',
+      role: 'customer'
+    };
+    req.session.isAdmin = false;
   }
-  next();
+  
+  req.session.login = true;
+  console.log(`User set to ${role}`);
+  res.redirect('back');  // Redirect back to the page the user was on
 });
+
 
 // Middleware to make user available in all routes
 app.use((req, res, next) => {

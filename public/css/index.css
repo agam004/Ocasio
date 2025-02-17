@@ -1,0 +1,14 @@
+/* Ensure the image container hides overflow */
+.img-container {
+    overflow: hidden;
+  }
+  
+  /* Add transition and scale effect to the image on hover */
+  .custom-hover {
+    transition: transform 0.3s ease;
+  }
+  
+  .custom-hover:hover {
+    transform: scale(1.1);
+  }
+  
