@@ -51,14 +51,17 @@
                                 <td><%= booking.numTickets %></td>
                                 <td>
                                     <form action="/cancel-booking" method="POST" class="d-inline">
-                                        <input type="hidden" name="bookingId" value="<%= booking._id %>">
-                                        <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                                      <input type="hidden" name="bookingId" value="<%= booking._id %>">
+                                      <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
                                     </form>
                                     
                                     <% if (user.role === 'admin') { %>
-                                        <a href="/edit-event/<%= booking.event._id %>" class="btn btn-warning btn-sm">Edit Event</a>
+                                      <a href="/edit-event/<%= booking.event._id %>" class="btn btn-warning btn-sm">Edit Event</a>
                                     <% } %>
-                                </td>
+                                    
+                                    <!-- Link to view receipt -->
+                                    <a href="/receipt/<%= booking._id %>" class="btn btn-info btn-sm">View Receipt</a>
+                                  </td>
                             </tr>
                         <% }) %>
                     </tbody>

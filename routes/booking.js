@@ -174,4 +174,20 @@ router.get('/book-event/:eventId', async (req, res) => {
     }
 });
 
+router.get('/receipt/:bookingId', async (req, res) => {
+    try {
+      const booking = await Booking.findById(req.params.bookingId).populate('event');
+      if (!booking) {
+        return res.status(404).send('Receipt not found');
+      }
+      // Optionally, calculate total cost here if not stored in booking
+      // For example, if you have booking.numTickets and event.price:
+      // booking.totalCost = (booking.numTickets * booking.event.price * 1.13) + (booking.numTickets * 2);
+      res.render('receipt', { booking });
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Server Error');
+    }
+  });
+  
 module.exports = router;
