@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const Events = require('../models/Events');  // Event model
+const Booking = require('../models/Booking');
+const Events = require('../models/Events');
+const User = require('../models/User');
 const adminAuth = require('../middleware/adminAuth');  // Admin authentication middleware
 
 router.use(express.urlencoded({ extended: true }));
@@ -107,6 +109,42 @@ router.post('/admin/manage-event/:id', adminAuth, async (req, res) => {
         res.status(500).send('Error updating event');
     }
 });
+router.get('/admin/bookings', adminAuth, async (req, res) => {
+    try {
+      const bookings = await Booking.find()
+        .populate('event')
+        .populate('user');  // Fetch user details as well
+  
+      res.render('admin-bookings', { bookings, user: req.session.user });
+    } catch (err) {
+      console.error('Error fetching bookings:', err);
+      res.status(500).send('Error fetching bookings');
+    }
+  });
 
+  // Cancel booking on behalf of a user (admin-only)
+router.post('/admin/bookings/:bookingId/cancel', adminAuth, async (req, res) => {
+    const { bookingId } = req.params;
+    try {
+      const booking = await Booking.findById(bookingId);
+      if (!booking) {
+        return res.status(404).send('Booking not found');
+      }
+      
+      // Update event booked count accordingly
+      const event = await Event.findById(booking.event);
+      if (event) {
+        event.booked = Math.max(0, event.booked - booking.numTickets);
+        await event.save();
+      }
+  
+      await Booking.findByIdAndDelete(bookingId);
+      res.redirect('/admin/bookings');
+    } catch (error) {
+      console.error('Error canceling booking:', error);
+      res.status(500).send('Error canceling booking');
+    }
+  });
+  
 
 module.exports = router;

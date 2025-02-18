@@ -4,6 +4,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
 const session = require('express-session');
+const Notification = require('./models/Notification');
 
 const app = express();
 const PORT = process.env.PORT;
@@ -58,6 +59,18 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use(async (req, res, next) => {
+  if (req.session.user) {
+    // Assuming you have a Notification model:
+    const count = await Notification.countDocuments({ user: req.session.user._id, read: false });
+    res.locals.unreadNotificationsCount = count;
+  } else {
+    res.locals.unreadNotificationsCount = 0;
+  }
+  next();
+});
+
+
 // Serve static files
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -70,11 +83,13 @@ const authRoutes = require('./routes/Auth');
 const adminRoutes = require('./routes/admin');
 const eventRoutes = require('./routes/events');
 const bookingRoutes = require('./routes/booking');
+const notificationRoutes = require('./routes/notifications');
 
 app.use('/', bookingRoutes);
 app.use('/', authRoutes);
 app.use('/', adminRoutes);
 app.use('/', eventRoutes);
+app.use('/', notificationRoutes);
 
 // session.user = {
 //   _id: "67a82baa0f260e84dd78405e", //user._id,

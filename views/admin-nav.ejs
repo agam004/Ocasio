@@ -15,6 +15,17 @@
                 <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
                 <li class="nav-item"><a class="nav-link" href="/admin/create-event">Add Event</a></li>
                 <li class="nav-item"><a class="nav-link" href="/admin/manage-events">Manage Events</a></li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/notifications">
+                      Notifications
+                      <% if (typeof unreadNotificationsCount !== 'undefined' && unreadNotificationsCount > 0) { %>
+                        <span class="badge bg-danger"><%= unreadNotificationsCount %></span>
+                      <% } %>
+                    </a>
+                  </li>
+                  <li class="nav-item">
+                    <a class="nav-link" href="/admin/bookings">Manage Bookings</a>
+                  </li>
                 <li class="nav-item"><a class="nav-link btn btn-primary text-white ms-2" href="/logout">Logout</a></li>
             </ul>
         </div>
