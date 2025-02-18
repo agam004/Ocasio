@@ -4,44 +4,58 @@ const Booking = require('../models/Booking');
 const Events = require('../models/Events');
 const User = require('../models/User');
 const adminAuth = require('../middleware/adminAuth');  // Admin authentication middleware
+const EventCategory = require('../models/EventCategory');
 
 router.use(express.urlencoded({ extended: true }));
 
 // Show the "Create Event" form
-router.get('/admin/create-event', adminAuth, (req, res) => {
-    res.render('create-event');  
+router.get('/admin/create-event', adminAuth, async (req, res) => {
+  try {
+    const categories = await EventCategory.find().sort({ name: 1 });
+    res.render('create-event', { categories, user: req.session.user });
+  } catch (err) {
+    console.error('Error fetching categories:', err);
+    res.status(500).send('Error fetching categories');
+  }
 });
 
 // Handle "Create Event" form submission
 router.post('/admin/create-event', adminAuth, async (req, res) => {
-    console.log(req.body); // Debugging
+  console.log(req.body); // Debugging
 
-    let { title, description, dateTime, imageUrl, capacity, price, location } = req.body;
+  let { title, description, dateTime, imageUrl, capacity, price, location, category } = req.body;
 
-    // Validation check
-    if (!title || !description || !dateTime || !capacity || !price || !location) {
-        return res.status(400).send("All fields are required");
-    }
-    if (!imageUrl) {  
-        imageUrl = '../images/event-default.jpg'; // Default image
-    }
+  // Validation check
+  if (!title || !description || !dateTime || !capacity || !price || !location || !category) {
+      return res.status(400).send("All fields are required");
+  }
+  if (!imageUrl) {  
+      imageUrl = '../images/event-default.jpg'; // Default image
+  }
 
-    try {
-        const localDate = new Date(dateTime);
-        const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
+  try {
+      // Convert local date/time to UTC
+      const localDate = new Date(dateTime);
+      const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
 
-        const newEvent = new Events({ 
-            title, description, date:utcDate, imageUrl, 
-            capacity, price, location, 
-            booked: 0  // New event starts with zero bookings
-        });
+      const newEvent = new Events({ 
+          title, 
+          description, 
+          date: utcDate, 
+          imageUrl, 
+          capacity, 
+          price, 
+          location,
+          category, // Save the selected category
+          booked: 0  // New event starts with zero bookings
+      });
 
-        await newEvent.save();
-        res.redirect('/admin/manage-events');
-    } catch (error) {
-        console.error('Error creating event:', error);
-        res.status(500).send('Server Error');
-    }
+      await newEvent.save();
+      res.redirect('/admin/manage-events');
+  } catch (error) {
+      console.error('Error creating event:', error);
+      res.status(500).send('Server Error');
+  }
 });
 
 // Manage all events (GET)

@@ -11,6 +11,11 @@ const eventSchema = new mongoose.Schema({
     booked: { type: Number, default: 0 },
     price: { type: Number, required: true },
     location: { type: String, required: true },
+    category: { 
+        type: mongoose.Schema.Types.ObjectId, 
+        ref: 'EventCategory', 
+        required: true 
+      }
 });
 
 const Event = mongoose.model('Events', eventSchema);

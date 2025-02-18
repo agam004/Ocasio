@@ -84,12 +84,14 @@ const adminRoutes = require('./routes/admin');
 const eventRoutes = require('./routes/events');
 const bookingRoutes = require('./routes/booking');
 const notificationRoutes = require('./routes/notifications');
+const eventCategoryRoutes = require('./routes/eventCategories');
 
 app.use('/', bookingRoutes);
 app.use('/', authRoutes);
 app.use('/', adminRoutes);
 app.use('/', eventRoutes);
 app.use('/', notificationRoutes);
+app.use('/', eventCategoryRoutes);
 
 // session.user = {
 //   _id: "67a82baa0f260e84dd78405e", //user._id,

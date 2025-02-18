@@ -24,6 +24,14 @@
                 <label for="description" class="form-label">Event Description</label>
                 <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
             </div>
+            <div class="mb-3">
+                <label for="category" class="form-label">Event Category</label>
+                <select name="category" id="category" class="form-select" required>
+                  <% categories.forEach(cat => { %>
+                    <option value="<%= cat._id %>"><%= cat.name %></option>
+                  <% }); %>
+                </select>
+              </div>
             <!-- Event Date -->
             <div class="mb-3">
                 <label for="dateTime" class="form-label">Event Date and Time</label>
