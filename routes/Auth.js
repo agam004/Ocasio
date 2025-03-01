@@ -2,7 +2,9 @@ const express = require('express');
 const router = express.Router();
 // const bcrypt = require('bcryptjs');
 const User = require('../models/User');
-
+const UserProfile = require('../models/UserProfile');
+const createNotification = require('../middleware/notification');
+const checkUserBookingsAndNotifications = require('../middleware/bookingNotifications');
 router.get('/signup', (req, res) => {
   res.render('signup'); // Assumes you have a views/login.ejs file
 });
@@ -33,6 +35,19 @@ router.post('/signup', async (req, res) => {
     });
 
     await newUser.save();
+    const newProfile = new UserProfile({
+      user: newUser._id,
+      bio: '',
+      profilePic: '../images/profile-default.png',
+      phoneNumber: '',
+      address: '',
+      socialLinks: {
+        facebook: '',
+        instagram: ''
+      }
+    });
+    await newProfile.save();
+
     res.redirect('/login');  // Redirect after successful signup
   } catch (err) {
     console.error(err);
@@ -67,19 +82,21 @@ router.post('/login', async (req, res) => {
     // Set session to indicate that the user is logged in
     req.session.login = true;
     req.session.username = user.name;
-
-     // Store user details in session
-     req.session.user = {
+    const userProfile = await UserProfile.findOne({ user: user._id });
+    req.session.user = {
       _id: user._id,
       name: user.name,
       email: user.email,
-      role: user.role
-  };
+      role: user.role,
+      profilePic: userProfile ? userProfile.profilePic : '../images/profile-default.png'
+    };
     console.log('User logged in:', req.session.user);
-
     if (user.role === 'admin') {
       req.session.isAdmin = true;
     }
+    
+    // Check for upcoming bookings and notifications
+    checkUserBookingsAndNotifications(user._id);
     // Default redirect for customer
     res.redirect('/');
 

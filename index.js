@@ -31,17 +31,17 @@ app.get('/set-user', (req, res) => {
   
   if (role === 'admin') {
     req.session.user = {
-      _id: '67a7f6854210d1431ab03c37',
-      name: 'Guragampreet Singh',
-      email: 'singhguragampreet@gmail.com',
+      _id: '67b6478cd531588c30136e76',
+      name: 'Chad Admin',
+      email: 'jatt@mail.com',
       role: 'admin'
     };
     req.session.isAdmin = true;
   } else if (role === 'customer') {
     req.session.user = {
-      _id: '67a82baa0f260e84dd78405e',
-      name: 'Guragampreet Singh',
-      email: 'yemor38831@shouxs.com',
+      _id: '67b64759d531588c30136e71',
+      name: 'Lucky Singh',
+      email: 'lucky@mail.com',
       role: 'customer'
     };
     req.session.isAdmin = false;
@@ -85,6 +85,9 @@ const eventRoutes = require('./routes/events');
 const bookingRoutes = require('./routes/booking');
 const notificationRoutes = require('./routes/notifications');
 const eventCategoryRoutes = require('./routes/eventCategories');
+const profileRoutes = require('./routes/Profile');
+const reviewRoutes = require('./routes/review');
+
 
 app.use('/', bookingRoutes);
 app.use('/', authRoutes);
@@ -92,13 +95,8 @@ app.use('/', adminRoutes);
 app.use('/', eventRoutes);
 app.use('/', notificationRoutes);
 app.use('/', eventCategoryRoutes);
-
-// session.user = {
-//   _id: "67a82baa0f260e84dd78405e", //user._id,
-//   name: "Guragampreet Singh", //user.name,
-//   email: "yemor38831@shouxs.com", //user.email,
-//   role: "customer",//user.role
-// };
+app.use('/', profileRoutes);
+app.use('/', reviewRoutes);
 
 app.get('/about', (req, res) => {
   res.render('about', { user: req.session.user || null });

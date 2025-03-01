@@ -5,10 +5,11 @@ const userProfileSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   bio: { type: String },
   profilePic: { type: String, default: '/images/default-profile.png' },
+  phoneNumber: { type: String },
+  address: { type: String },
   socialLinks: {
-    twitter: { type: String },
     facebook: { type: String },
-    instagram: { type: String }
+    instagram: { type: String },
   }
 });
 

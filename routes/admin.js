@@ -3,10 +3,13 @@ const router = express.Router();
 const Booking = require('../models/Booking');
 const Events = require('../models/Events');
 const User = require('../models/User');
-const adminAuth = require('../middleware/adminAuth');  // Admin authentication middleware
+const adminAuth = require('../middleware/adminAuth');  
 const EventCategory = require('../models/EventCategory');
-
+const Notification = require('../models/Notification');
+const createNotification = require('../middleware/notification');
 router.use(express.urlencoded({ extended: true }));
+
+
 
 // Show the "Create Event" form
 router.get('/admin/create-event', adminAuth, async (req, res) => {
@@ -137,22 +140,31 @@ router.get('/admin/bookings', adminAuth, async (req, res) => {
   });
 
   // Cancel booking on behalf of a user (admin-only)
-router.post('/admin/bookings/:bookingId/cancel', adminAuth, async (req, res) => {
+  router.post('/admin/bookings/:bookingId/cancel', adminAuth, async (req, res) => {
     const { bookingId } = req.params;
     try {
-      const booking = await Booking.findById(bookingId);
+      // Populate the event field so that we get the event document instead of just the ObjectId.
+      const booking = await Booking.findById(bookingId).populate('event');
+      console.log('Booking found:', booking);
       if (!booking) {
         return res.status(404).send('Booking not found');
       }
       
-      // Update event booked count accordingly
-      const event = await Event.findById(booking.event);
-      if (event) {
-        event.booked = Math.max(0, event.booked - booking.numTickets);
-        await event.save();
+      // Check that the booking has an event
+      if (!booking.event) {
+        console.error('Booking event not found for booking:', bookingId);
+        return res.status(500).send('Booking event not found');
       }
-  
+      
+      // Now that the event field is populated, use it directly.
+      const eventDoc = booking.event;
+      if (eventDoc) {
+        eventDoc.booked = Math.max(0, eventDoc.booked - booking.numTickets);
+        await eventDoc.save();
+      }
+    createNotification(booking.user, `Your booking for event "${eventDoc.title}" is cancelled by an Admin!`, "system");
       await Booking.findByIdAndDelete(bookingId);
+      
       res.redirect('/admin/bookings');
     } catch (error) {
       console.error('Error canceling booking:', error);
@@ -160,5 +172,16 @@ router.post('/admin/bookings/:bookingId/cancel', adminAuth, async (req, res) => 
     }
   });
   
+  router.get('/admin/past-events', adminAuth, async (req, res) => {
+    try {
+      const now = new Date();
+      // Only past events
+      const pastEvents = await Events.find({ date: { $lt: now } }).sort({ date: -1 });
+      res.render('admin-past-events', { pastEvents, user: req.session.user });
+    } catch (err) {
+      console.error('Error fetching past events:', err);
+      res.status(500).send('Error fetching past events');
+    }
+  });
 
 module.exports = router;

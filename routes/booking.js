@@ -4,17 +4,9 @@ const router = express.Router();
 const Event = require('../models/Events');
 const User = require('../models/User'); 
 const Notification = require('../models/Notification');
+const createNotification = require('../middleware/notification');
+const isAuthenticated = require('../middleware/adminAuth');
 
-// Notification helper function
-function createNotification(userId, message, type = 'system') {
-  const newNotification = new Notification({
-    user: userId,
-    message,
-    type,
-    read: false
-  });
-  newNotification.save().catch(err => console.error('Error saving notification:', err));
-}
 
 
 // Cancel a booking
@@ -170,6 +162,26 @@ router.get('/receipt/:bookingId', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');
+  }
+});
+
+router.get('/my-past-events', async (req, res) => {
+  try {
+    const now = new Date();
+    // Find all bookings for the logged in user
+    // Populate the event field
+    const bookings = await Booking.find({ user: req.session.user._id })
+      .populate('event');
+    
+    // Filter for past events
+    const pastBookings = bookings.filter(booking => {
+      return booking.event && new Date(booking.event.date) < now;
+    });
+    
+    res.render('my-past-events', { pastBookings, user: req.session.user });
+  } catch (err) {
+    console.error('Error fetching past events:', err);
+    res.status(500).send('Error fetching past events');
   }
 });
 

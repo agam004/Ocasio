@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Notifications</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="shortcut icon" href="https://res.cloudinary.com/dehhnip92/image/upload/v1740858902/Occasio_o3cgzl.png" type="image/x-icon">
 </head>
 <body>
   <% if (user) { %>
@@ -40,7 +41,7 @@
           <% notifications.forEach(notification => { %>
             <tr class="<%= notification.read ? '' : 'table-warning' %>">
               <td><%= new Date(notification.createdAt).toLocaleString() %></td>
-              <td><%= notification.message %></td>
+              <td><%- notification.message %></td>
               <td><%= notification.type %></td>
               <td><%= notification.read ? 'Read' : 'Unread' %></td>
               <td>

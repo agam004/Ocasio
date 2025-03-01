@@ -3,7 +3,7 @@ const express = require('express');
 const router = express.Router();
 const EventCategory = require('../models/EventCategory');
 const adminAuth = require('../middleware/adminAuth');
-
+const createNotification = require('../middleware/notification');
 // List all categories
 router.get('/admin/categories', adminAuth, async (req, res) => {
   try {
