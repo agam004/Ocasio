@@ -35,36 +35,75 @@
                 <table class="table table-bordered table-hover bg-light text-dark">
                     <thead class="table-primary">
                         <tr>
-                            <th>Event Name</th>
-                            <th>Date</th>
-                            <th>Tickets</th>
-                            <th>Action</th>
+                            <th class="text-center">Event Name</th>
+                            <th class="text-center">Date</th>
+                            <th class="text-center">Tickets</th>
+                            <th class="text-center">Action</th>
+                            <th class="text-center">Receipt</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <% bookings.forEach(booking => { %>
+                        <% let upcomingEvents = [], pastEvents = []; %>
+                    
+                        <% bookings.forEach(booking => { 
+                            if (new Date(booking.event.date) >= new Date()) {
+                                upcomingEvents.push(booking);
+                            } else {
+                                pastEvents.push(booking);
+                            }
+                        }); %>
+                    
+                        <!-- Upcoming Events -->
+                        <% if (upcomingEvents.length > 0) { %>
                             <tr>
-                                <td>
-                                    <a href="/event/<%= booking.event._id %>"><%= booking.event.title %></a>
-                                </td>
-                                <td><%= new Date(booking.event.date).toLocaleDateString() %></td>
-                                <td><%= booking.numTickets %></td>
-                                <td>
-                                    <form action="/cancel-booking" method="POST" class="d-inline">
-                                      <input type="hidden" name="bookingId" value="<%= booking._id %>">
-                                      <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
-                                    </form>
-                                    
-                                    <% if (user.role === 'admin') { %>
-                                      <a href="/edit-event/<%= booking.event._id %>" class="btn btn-warning btn-sm">Edit Event</a>
-                                    <% } %>
-                                    
-                                    <!-- Link to view receipt -->
-                                    <a href="/receipt/<%= booking._id %>" class="btn btn-info btn-sm">View Receipt</a>
-                                  </td>
+                                <th colspan="5" class="text-center bg-primary text-white">Upcoming Events</th>
                             </tr>
-                        <% }) %>
+                            <% upcomingEvents.forEach(booking => { %>
+                                <tr>
+                                    <td class="text-center">
+                                        <a href="/event/<%= booking.event.eventId %>"><%= booking.event.title %></a>
+                                    </td>
+                                    <td class="text-center"><%= new Date(booking.event.date).toLocaleDateString() %></td>
+                                    <td class="text-center"><%= booking.numTickets %></td>
+                                    <td>
+                                        <form action="/cancel-booking" method="POST" class="d-inline-block w-100">
+                                            <input type="hidden" name="bookingId" value="<%= booking._id %>">
+                                            <button type="submit" class="btn btn-danger btn-sm w-100">Cancel Booking</button>
+                                        </form>
+                                    </td>
+                                    <td>
+                                        <a href="/receipt/<%= booking._id %>" class="btn btn-info btn-sm w-100">View Receipt</a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
+                    
+                        <!-- Past Events -->
+                        <% if (pastEvents.length > 0) { %>
+                            <tr>
+                                <th colspan="5" class="text-center bg-secondary text-white">Past Events</th>
+                            </tr>
+                            <% pastEvents.forEach(booking => { %>
+                                <tr>
+                                    <td class="text-center">
+                                        <a href="/event/<%= booking.event.eventId %>"><%= booking.event.title %></a>
+                                    </td>
+                                    <td class="text-center"><%= new Date(booking.event.date).toLocaleDateString() %></td>
+                                    <td class="text-center"><%= booking.numTickets %></td>
+                                    <td>
+                                        <a href="/review/<%= booking.event.eventId %>" 
+                                            class="btn btn-primary btn-sm w-100 <%= booking.reviewSubmitted ? 'disabled' : '' %>">
+                                            <%= booking.reviewSubmitted ? 'Reviewed' : 'Write Review' %>
+                                        </a>
+                                    </td>
+                                    <td>
+                                        <a href="/receipt/<%= booking._id %>" class="btn btn-info btn-sm w-100">View Receipt</a>
+                                    </td>
+                                </tr>
+                            <% }) %>
+                        <% } %>
                     </tbody>
+                    
                 </table>
             </div>
         <% } else { %>

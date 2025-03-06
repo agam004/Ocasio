@@ -4,6 +4,8 @@ const router = express.Router();
 const Events = require('../models/Events');
 const Booking = require('../models/Booking');
 const EventCategory = require('../models/EventCategory');
+const Review = require('../models/Review');
+const adminAuth = require('../middleware/adminAuth');
 
 // Route to display all events on the homepage
 router.get('/', async (req, res) => {
@@ -52,4 +54,21 @@ router.get('/event/:id', async (req, res) => {
     }
 });
 
+router.get('/past-event/:id', adminAuth, async (req, res) => {
+  try {
+      const eventId = req.params.id;
+      const event = await Events.findById(eventId);
+      const reviews = await Review.find({ event: eventId }).populate('user', 'name');
+      const attendees = await Booking.find({ event: eventId }).populate('user', 'name');
+
+      if (!event) {
+          return res.status(404).send('Event not found');
+      }
+
+      res.render('past-event-details', { event, reviews, attendees, user: req.session.user });
+  } catch (err) {
+      console.error('Error fetching past event details:', err);
+      res.status(500).send('Server error');
+  }
+});
 module.exports = router;

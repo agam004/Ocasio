@@ -7,8 +7,6 @@ const Notification = require('../models/Notification');
 const createNotification = require('../middleware/notification');
 const isAuthenticated = require('../middleware/adminAuth');
 
-
-
 // Cancel a booking
 router.post('/cancel-booking', async (req, res) => {
   console.log("Booking being canceled: ", req.body);
@@ -132,17 +130,25 @@ router.get('/bookings', async (req, res) => {
 
     const userId = req.session.user._id;
     const bookings = await Booking.find({ user: userId }).populate('event'); 
-
+    
     // Format data for rendering
-    const formattedBookings = bookings.map(booking => ({
-      _id: booking._id,
-      numTickets: booking.numTickets,
-      event: {
-        title: booking.event.title,
-        date: booking.event.date,
-        eventId : booking.event._id
-      }
-    }));
+    const formattedBookings = bookings.map(booking => {
+      const eventDate = new Date(booking.event.date);
+      const now = new Date();
+      const isPastEvent = eventDate < now; // Check if the event has already happened
+  
+      return {
+          _id: booking._id,
+          numTickets: booking.numTickets,
+          event: {
+              title: booking.event.title,
+              date: booking.event.date,
+              eventId: booking.event._id
+          },
+          isPastEvent, // Add the past event status
+          reviewSubmitted: booking.reviewSubmitted // Check if the review is already submitted
+      };
+  });
 
     res.render('bookings', { bookings: formattedBookings, user: req.session.user });
   } catch (err) {
@@ -162,26 +168,6 @@ router.get('/receipt/:bookingId', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Server Error');
-  }
-});
-
-router.get('/my-past-events', async (req, res) => {
-  try {
-    const now = new Date();
-    // Find all bookings for the logged in user
-    // Populate the event field
-    const bookings = await Booking.find({ user: req.session.user._id })
-      .populate('event');
-    
-    // Filter for past events
-    const pastBookings = bookings.filter(booking => {
-      return booking.event && new Date(booking.event.date) < now;
-    });
-    
-    res.render('my-past-events', { pastBookings, user: req.session.user });
-  } catch (err) {
-    console.error('Error fetching past events:', err);
-    res.status(500).send('Error fetching past events');
   }
 });
 

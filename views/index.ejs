@@ -81,6 +81,10 @@
   
   <!-- Footer -->
   <%- include('footer.ejs') %>
-
+  <script>
+    if (window.location.search.includes('refresh=true')) {
+        window.location.href = window.location.pathname;
+    }
+  </script>
 </body>
 </html>

@@ -64,6 +64,8 @@ app.use(async (req, res, next) => {
     // Assuming you have a Notification model:
     const count = await Notification.countDocuments({ user: req.session.user._id, read: false });
     res.locals.unreadNotificationsCount = count;
+    req.session.unreadNotificationsCount = count;  // Ensure session stores the count
+    console.log("Unread Notifications Count Updated:", count);
   } else {
     res.locals.unreadNotificationsCount = 0;
   }

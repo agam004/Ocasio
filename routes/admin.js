@@ -5,8 +5,8 @@ const Events = require('../models/Events');
 const User = require('../models/User');
 const adminAuth = require('../middleware/adminAuth');  
 const EventCategory = require('../models/EventCategory');
-const Notification = require('../models/Notification');
 const createNotification = require('../middleware/notification');
+const Review = require('../models/Review');
 router.use(express.urlencoded({ extended: true }));
 
 
@@ -74,70 +74,89 @@ router.get('/admin/manage-events', adminAuth, async (req, res) => {
 
 // Get event details for editing (GET)
 router.get('/admin/manage-event/:id', adminAuth, async (req, res) => {
-    const eventId = req.params.id;
-    try {
-      const event = await Events.findById(eventId);
+  try {
+      const event = await Events.findById(req.params.id);
+      const categories = await EventCategory.find().sort({ name: 1 });
+
       if (!event) {
-        return res.status(404).send('Event not found');
+          return res.status(404).send('Event not found');
       }
-      res.render('edit-event', { event });
-    } catch (err) {
+
+      res.render('edit-event', { event, categories });
+  } catch (err) {
       console.error('Error fetching event:', err);
       res.status(500).send('Error fetching event');
-    }
-  });
-  
-// Update or delete event details (POST)
+  }
+});
+
+// Route to update the event details
 router.post('/admin/manage-event/:id', adminAuth, async (req, res) => {
-    const eventId = req.params.id;
-    
-    // Check if the _method field is set to DELETE
-    if (req.body._method && req.body._method.toUpperCase() === 'DELETE') {
-        try {
-            await Events.findByIdAndDelete(eventId);
-            return res.redirect('/admin/manage-events');
-        } catch (err) {
-            console.error('Error deleting event:', err);
-            return res.status(500).send('Error deleting event');
-        }
-    }
-    
-    // Otherwise, treat it as an update request
-    const { title, description, dateTime, imageUrl, capacity, price, location } = req.body;
-    try {
-        const event = await Events.findById(eventId);
-        if (!event) {
-            return res.status(404).send('Event not found');
-        }
-        const newdate = new Date(dateTime);
-        const utcDate = new Date(newdate.getTime() - newdate.getTimezoneOffset() * 60000);
-        // Update fields
-        event.title = title || event.title;
-        event.description = description || event.description;
-        event.date = utcDate || event.date;
-        event.imageUrl = imageUrl || event.imageUrl;
-        event.capacity = capacity || event.capacity;
-        event.price = price || event.price;
-        event.location = location || event.location;
-        await event.save();
-        res.redirect('/admin/manage-events');  
-    } catch (err) {
-        console.error('Error updating event:', err);
-        res.status(500).send('Error updating event');
-    }
+  const { title, description, dateTime, imageUrl, capacity, price, location, category } = req.body;
+  
+  try {
+      const event = await Events.findById(req.params.id);
+      if (!event) {
+          return res.status(404).send('Event not found');
+      }
+
+      // Convert date to UTC
+      const localDate = new Date(dateTime);
+      const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
+
+      // Update event details
+      event.title = title;
+      event.description = description;
+      event.date = utcDate;
+      event.imageUrl = imageUrl;
+      event.capacity = capacity;
+      event.price = price;
+      event.location = location;
+      event.category = category;
+
+      await event.save();
+      res.redirect('/admin/manage-events');  
+  } catch (err) {
+      console.error('Error updating event:', err);
+      res.status(500).send('Error updating event');
+  }
 });
 router.get('/admin/bookings', adminAuth, async (req, res) => {
-    try {
-      const bookings = await Booking.find()
-        .populate('event')
-        .populate('user');  // Fetch user details as well
-  
-      res.render('admin-bookings', { bookings, user: req.session.user });
-    } catch (err) {
+  try {
+    const bookings = await Booking.find()
+    .populate({
+        path: 'user',
+        select: 'name email' // Ensure we retrieve the email
+    })
+    .populate('event');
+
+      // Format data for rendering
+      const formattedBookings = bookings.map(booking => {
+          const eventDate = new Date(booking.event.date);
+          const now = new Date();
+          const isPastEvent = eventDate < now; // Check if event is in the past
+
+          return {
+              _id: booking._id, 
+                user: booking.user ? { name: booking.user.name, email: booking.user.email } : { name: 'N/A', email: null },
+                event: booking.event ? {
+                  title: booking.event.title,
+                  date: booking.event.date,
+                  price: booking.event.price,
+                  eventId: booking.event._id
+              } : { title: 'N/A', date: null, price: 0 },
+              numTickets: booking.numTickets,
+              totalCost: ((booking.numTickets * booking.event.price * 1.13) + (booking.numTickets * 2)).toFixed(2),
+              isPastEvent // Add past event status
+          };
+      });
+
+      res.render('admin-bookings', { bookings: formattedBookings, user: req.session.user });
+  } catch (err) {
       console.error('Error fetching bookings:', err);
       res.status(500).send('Error fetching bookings');
-    }
-  });
+  }
+});
+
 
   // Cancel booking on behalf of a user (admin-only)
   router.post('/admin/bookings/:bookingId/cancel', adminAuth, async (req, res) => {
@@ -183,5 +202,38 @@ router.get('/admin/bookings', adminAuth, async (req, res) => {
       res.status(500).send('Error fetching past events');
     }
   });
+// Route to display all users
+router.get('/admin/users', adminAuth, async (req, res) => {
+    try {
+        const users = await User.find().select('name email role');
+        res.render('admin-users', { users, user: req.session.user });
+    } catch (err) {
+        console.error('Error fetching users:', err);
+        res.status(500).send('Error fetching users');
+    }
+});
+
+// Route to change user role
+router.post('/admin/users/:id/change-role', adminAuth, async (req, res) => {
+    try {
+        const { role } = req.body;
+        await User.findByIdAndUpdate(req.params.id, { role });
+        res.redirect('/admin/users');
+    } catch (err) {
+        console.error('Error updating user role:', err);
+        res.status(500).send('Error updating user role');
+    }
+});
+
+// Route to delete a user
+router.post('/admin/users/:id/delete', adminAuth, async (req, res) => {
+    try {
+        await User.findByIdAndDelete(req.params.id);
+        res.redirect('/admin/users');
+    } catch (err) {
+        console.error('Error deleting user:', err);
+        res.status(500).send('Error deleting user');
+    }
+});
 
 module.exports = router;

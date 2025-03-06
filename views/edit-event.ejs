@@ -6,43 +6,102 @@
     <title>Occasio - Event Editor</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="shortcut icon" href="https://res.cloudinary.com/dehhnip92/image/upload/v1740858902/Occasio_o3cgzl.png" type="image/x-icon">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+        .event-form-container {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 700px;
+            margin: auto;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .event-image-preview {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
   <%- include('admin-nav.ejs') %>  <!-- Admin Navigation Bar -->
 
-<div class="container mt-4">
-  <h2>Edit Event</h2>
-  <form action="/admin/manage-event/<%= event._id %>" method="POST">
-    <div class="form-group">
-      <label for="title">Event Title</label>
-      <input type="text" class="form-control" id="title" name="title" value="<%= event.title %>" required>
-    </div>
-    <div class="form-group">
-      <label for="description">Event Description</label>
-      <textarea class="form-control" id="description" name="description" rows="3" required><%= event.description %></textarea>
-    </div>
-    <div class="form-group">
-      <label for="dateTime">Event Date and Time</label>
-      <input type="datetime-local" class="form-control" id="dateTime" name="dateTime" value="<%= new Date(event.date).toISOString().slice(0,16) %>" required>
-    </div>
-    <div class="form-group">
-      <label for="imageUrl">Event Image URL</label>
-      <input type="text" class="form-control" id="imageUrl" name="imageUrl" value="<%= event.imageUrl %>">
-    </div>
-    <div class="form-group">
-      <label for="capacity">Capacity</label>
-      <input type="number" class="form-control" id="capacity" name="capacity" value="<%= event.capacity %>" required>
-    </div>
-    <div class="form-group">
-      <label for="price">Ticket Price</label>
-      <input type="number" class="form-control" id="price" name="price" value="<%= event.price %>" required>
-    </div>
-    <button type="submit" class="btn btn-primary mt-3">Update Event</button>
-  </form>
+<div class="container mt-4 mb-4">
+  <div class="event-form-container">
+    <h2 class="text-center"><i class="fas fa-edit"></i> Edit Event</h2>
+    <form action="/admin/manage-event/<%= event._id %>" method="POST">
+      <!-- Event Title -->
+      <div class="form-group">
+        <label for="title"><i class="fas fa-heading"></i> Event Title</label>
+        <input type="text" class="form-control" id="title" name="title" value="<%= event.title %>" required>
+      </div>
+
+      <!-- Event Description -->
+      <div class="form-group">
+        <label for="description"><i class="fas fa-align-left"></i> Event Description</label>
+        <textarea class="form-control" id="description" name="description" rows="3" required><%= event.description %></textarea>
+      </div>
+
+      <!-- Event Date and Time -->
+      <div class="form-group">
+        <label for="dateTime"><i class="fas fa-calendar-alt"></i> Event Date and Time</label>
+        <input type="datetime-local" class="form-control" id="dateTime" name="dateTime" value="<%= new Date(event.date).toISOString().slice(0,16) %>" required>
+      </div>
+      <!-- Event Category -->
+      <div class="form-group">
+        <label for="category"><i class="fas fa-tags"></i> Event Category</label>
+        <select class="form-select" id="category" name="category" required>
+          <% categories.forEach(category => { %>
+            <option value="<%= category._id %>" <%= category._id.toString() === event.category.toString() ? 'selected' : '' %>>
+              <%= category.name %>
+            </option>
+          <% }) %>
+        </select>
+      </div>
+
+      <!-- Event Location -->
+      <div class="form-group">
+        <label for="location"><i class="fas fa-map-marker-alt"></i> Event Location</label>
+        <input type="text" class="form-control" id="location" name="location" value="<%= event.location %>" required>
+      </div>
+
+      <!-- Event Capacity -->
+      <div class="form-group">
+        <label for="capacity"><i class="fas fa-users"></i> Capacity</label>
+        <input type="number" class="form-control" id="capacity" name="capacity" value="<%= event.capacity %>" required>
+      </div>
+
+      <!-- Ticket Price -->
+      <div class="form-group">
+        <label for="price"><i class="fas fa-dollar-sign"></i> Ticket Price</label>
+        <input type="number" class="form-control" id="price" name="price" value="<%= event.price %>" required>
+      </div>
+
+      <!-- Submit Button -->
+      <div class="text-center">
+        <button type="submit" class="btn btn-primary mt-3"><i class="fas fa-save"></i> Update Event</button>
+      </div>
+    </form>
+  </div>
 </div>
+
 <%- include('footer.ejs') %>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  function updateImagePreview() {
+    document.getElementById('imagePreview').src = document.getElementById('imageUrl').value;
+  }
+</script>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

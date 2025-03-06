@@ -5,6 +5,10 @@ const User = require('../models/User');
 const UserProfile = require('../models/UserProfile');
 const createNotification = require('../middleware/notification');
 const checkUserBookingsAndNotifications = require('../middleware/bookingNotifications');
+const Notification = require('../models/Notification');
+
+
+
 router.get('/signup', (req, res) => {
   res.render('signup'); // Assumes you have a views/login.ejs file
 });
@@ -48,7 +52,7 @@ router.post('/signup', async (req, res) => {
     });
     await newProfile.save();
 
-    res.redirect('/login');  // Redirect after successful signup
+    
   } catch (err) {
     console.error(err);
     res.status(500).send('Error creating user');
@@ -94,11 +98,15 @@ router.post('/login', async (req, res) => {
     if (user.role === 'admin') {
       req.session.isAdmin = true;
     }
-    
+    req.session.isAuthenticated = true;
     // Check for upcoming bookings and notifications
     checkUserBookingsAndNotifications(user._id);
+    // Fetch unread notifications count immediately after login
+    const unreadCount = await Notification.countDocuments({ user: user._id, read: false });
+    req.session.unreadNotificationsCount = unreadCount;
+    res.locals.unreadNotificationsCount = unreadCount;
     // Default redirect for customer
-    res.redirect('/');
+    res.redirect('/?refresh=true');
 
   } catch (err) {
     console.error(err);

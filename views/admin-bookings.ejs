@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin - Manage Bookings</title>
+  <title>Occasio - Bookings Manager</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="shortcut icon" href="https://res.cloudinary.com/dehhnip92/image/upload/v1740858902/Occasio_o3cgzl.png" type="image/x-icon">
 </head>
@@ -21,26 +21,36 @@
             <th>Date</th>
             <th>Tickets</th>
             <th>Total Cost</th>
+            <th>Contact Customer</th>
             <th>Actions</th>
           </tr>
         </thead>
         <tbody>
           <% bookings.forEach(booking => { %>
             <tr>
+              <% if (!booking.isPastEvent) { %>
               <td><%= booking.user ? booking.user.name : 'N/A' %></td>
               <td><%= booking.event ? booking.event.title : 'N/A' %></td>
-              <td><%= new Date(booking.bookingDate).toLocaleString() %></td>
+              <td><%= new Date(booking.event.date).toLocaleDateString() %></td>
               <td><%= booking.numTickets %></td>
-              <td>$<%= ((booking.numTickets * booking.event.price * 1.13) + (booking.numTickets * 2)).toFixed(2) %></td>
+              <td>$<%= booking.totalCost %></td>
+              <td>
+                <% if (booking.user && booking.user.email) { %>
+                  <a href="mailto:<%= booking.user.email %>" class="btn btn-sm btn-outline-primary">
+                    📧 Email User
+                  </a>
+                <% } %>
+              </td>
               <td>
                 <form action="/admin/bookings/<%= booking._id %>/cancel" method="POST" class="d-inline">
-                  <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
-                </form>
-                <!-- Optionally, add an Update/Edit button here -->
+                    <button type="submit" class="btn btn-danger btn-sm">Cancel</button>
+                  </form>
+                <% } %>
               </td>
             </tr>
           <% }); %>
         </tbody>
+        
       </table>
     <% } else { %>
       <p>No bookings found.</p>
