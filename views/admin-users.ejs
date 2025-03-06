@@ -32,11 +32,13 @@
               <td><%= user.email %></td>
               <td>
                 <form action="/admin/users/<%= user._id %>/change-role" method="POST" class="d-inline">
-                  <select name="role" class="form-select d-inline w-auto" onchange="this.form.submit()">
-                    <option value="customer" <%= user.role === 'customer' ? 'selected' : '' %>>Customer</option>
-                    <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Admin</option>
-                  </select>
-                </form>
+                    <select name="role" class="form-select d-inline w-auto" onchange="this.form.submit()">
+                      <option value="customer" <%= user.role === 'customer' ? 'selected' : '' %>>Customer</option>
+                      <option value="organizer" <%= user.role === 'organizer' ? 'selected' : '' %>>Organizer</option>
+                      <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                    </select>
+                  </form>
+                  
               </td>
               <td>
                 <% if (user.role !== 'admin') { %>
@@ -47,6 +49,14 @@
                   </form>
                 <% } else { %>
                   <span class="badge bg-secondary">Admin Protected</span>
+                <% } %>
+              </td>
+              <td>
+                <%= user.role %>
+                <% if (user.role === 'organizer' && !user.isApproved) { %>
+                  <form action="/admin/approve-organizer/<%= user._id %>" method="POST" class="d-inline">
+                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                  </form>
                 <% } %>
               </td>
             </tr>

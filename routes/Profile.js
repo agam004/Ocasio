@@ -52,4 +52,24 @@ router.post('/profile', isAuthenticated, async (req, res) => {
       res.status(500).send("Error updating profile");
     }
   });
+  router.post('/apply-organizer', isAuthenticated, async (req, res) => {
+    try {
+        await User.findByIdAndUpdate(req.session.user._id, { role: 'organizer', isApproved: false });
+        res.redirect('/profile');
+    } catch (err) {
+        console.error('Error applying for organizer:', err);
+        res.status(500).send('Error processing request');
+    }
+});
+
+// Route for admin to approve organizers
+router.post('/admin/approve-organizer/:id', async (req, res) => {
+    try {
+        await User.findByIdAndUpdate(req.params.id, { isApproved: true });
+        res.redirect('/admin/users');
+    } catch (err) {
+        console.error('Error approving organizer:', err);
+        res.status(500).send('Error approving organizer');
+    }
+});
   module.exports = router;

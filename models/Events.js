@@ -15,7 +15,8 @@ const eventSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId, 
         ref: 'EventCategory', 
         required: true 
-      }
+      },
+    organizer: { type: mongoose.Schema.Types.ObjectId, ref: 'User', default: null } // New field
 });
 
 const Event = mongoose.model('Events', eventSchema);

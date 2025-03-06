@@ -205,7 +205,7 @@ router.get('/admin/bookings', adminAuth, async (req, res) => {
 // Route to display all users
 router.get('/admin/users', adminAuth, async (req, res) => {
     try {
-        const users = await User.find().select('name email role');
+      const users = await User.find().select('name email role isApproved');
         res.render('admin-users', { users, user: req.session.user });
     } catch (err) {
         console.error('Error fetching users:', err);
@@ -214,16 +214,30 @@ router.get('/admin/users', adminAuth, async (req, res) => {
 });
 
 // Route to change user role
-router.post('/admin/users/:id/change-role', adminAuth, async (req, res) => {
-    try {
-        const { role } = req.body;
-        await User.findByIdAndUpdate(req.params.id, { role });
-        res.redirect('/admin/users');
-    } catch (err) {
-        console.error('Error updating user role:', err);
-        res.status(500).send('Error updating user role');
-    }
+router.post('/admin/users/:id/change-role', async (req, res) => {
+  try {
+      const { role } = req.body;
+
+      // Prevent demoting an Admin if they are the last one
+      const adminCount = await User.countDocuments({ role: 'admin' });
+      if (adminCount === 1 && role !== 'admin') {
+          return res.status(400).send("At least one admin must remain.");
+      }
+
+      // If user is promoted to Organizer, mark them as pending approval
+      const updateFields = { role };
+      if (role === 'organizer') {
+          updateFields.isApproved = true; // Set approval pending
+      }
+
+      await User.findByIdAndUpdate(req.params.id, updateFields);
+      res.redirect('/admin/users');
+  } catch (err) {
+      console.error('Error updating user role:', err);
+      res.status(500).send('Error updating user role');
+  }
 });
+
 
 // Route to delete a user
 router.post('/admin/users/:id/delete', adminAuth, async (req, res) => {

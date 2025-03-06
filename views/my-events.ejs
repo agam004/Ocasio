@@ -1,0 +1,28 @@
+<h2>My Events</h2>
+<% if (events.length === 0) { %>
+  <p>No events found. <a href="/create-event">Create one now</a>.</p>
+<% } else { %>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Title</th>
+        <th>Date</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% events.forEach(event => { %>
+        <tr>
+          <td><%= event.title %></td>
+          <td><%= new Date(event.date).toLocaleDateString() %></td>
+          <td>
+            <a href="/edit-event/<%= event._id %>" class="btn btn-warning btn-sm">Edit</a>
+            <form action="/delete-event/<%= event._id %>" method="POST" class="d-inline">
+              <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+            </form>
+          </td>
+        </tr>
+      <% }); %>
+    </tbody>
+  </table>
+<% } %>

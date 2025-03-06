@@ -71,4 +71,24 @@ router.get('/past-event/:id', adminAuth, async (req, res) => {
       res.status(500).send('Server error');
   }
 });
+router.post('/create-event', async (req, res) => {
+  try {
+      if (!req.session.user || req.session.user.role !== 'organizer' || !req.session.user.isApproved) {
+          return res.status(403).send('Unauthorized');
+      }
+
+      const { title, description, dateTime, imageUrl, capacity, price, location, category } = req.body;
+      const newEvent = new Events({
+          title, description, date: dateTime, imageUrl, capacity, price, location, category,
+          organizer: req.session.user._id // Assign event to the logged-in organizer
+      });
+
+      await newEvent.save();
+      res.redirect('/my-events');
+  } catch (err) {
+      console.error('Error creating event:', err);
+      res.status(500).send('Error creating event');
+  }
+});
+
 module.exports = router;

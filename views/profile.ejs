@@ -59,6 +59,16 @@
       
       <button type="submit" class="btn btn-primary">Update Profile</button>
     </form>
+    <% if (user.role === 'customer' && !user.isApproved) { %>
+      <form action="/apply-organizer" method="POST">
+        <button type="submit" class="btn btn-warning">Apply as Organizer</button>
+      </form>
+      <small class="text-muted">Your application will be reviewed by an admin.</small>
+    <% } else if (user.role === 'organizer' && !user.isApproved) { %>
+      <p class="text-warning">Your request is pending approval.</p>
+    <% } else if (user.role === 'organizer' && user.isApproved) { %>
+      <p class="text-success">You are an approved organizer!</p>
+    <% } %>
   </div>
 
   <%- include('footer.ejs') %>
