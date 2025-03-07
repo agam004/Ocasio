@@ -105,7 +105,7 @@
         <% if (new Date(event.date) >= new Date()) { %>
             <% if (userBooking) { %>
                 <a href="/bookings" class="btn btn-success btn-lg">Manage Booking</a>
-            <% } else if (user && user.role === 'customer') { %>
+            <% } else if (user && user.role === 'customer' || user.role === "organizer") { %>
                 <a href="/book-event/<%= event._id %>" class="btn btn-primary btn-lg">Book Event</a>
             <% } else if (user && user.role === 'admin') { %>
                 <a href="/admin/manage-event/<%= event._id %>" class="btn btn-primary btn-lg">Manage Event</a>

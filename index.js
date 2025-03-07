@@ -34,7 +34,8 @@ app.get('/set-user', (req, res) => {
       _id: '67b6478cd531588c30136e76',
       name: 'Chad Admin',
       email: 'jatt@mail.com',
-      role: 'admin'
+      role: 'admin',
+      isApproved: true
     };
     req.session.isAdmin = true;
   } else if (role === 'customer') {
@@ -42,7 +43,8 @@ app.get('/set-user', (req, res) => {
       _id: '67b64759d531588c30136e71',
       name: 'Lucky Singh',
       email: 'lucky@mail.com',
-      role: 'customer'
+      role: 'customer',
+      isApproved: true
     };
     req.session.isAdmin = false;
   }

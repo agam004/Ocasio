@@ -69,50 +69,33 @@ router.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    // Find user by email
-    const user = await User.findOne({ email });
-    if (!user) {
-      return res.status(400).send('User not found');
-    }
+      const user = await User.findOne({ email });
+      if (!user) {
+          return res.status(400).send('User not found');
+      }
 
-    // Direct comparison of plain text password
-    if (password !== user.password) {
-      return res.status(400).send('Invalid credentials');
-    }
+      // Direct comparison for testing (Use hashed passwords in production)
+      if (password !== user.password) {
+          return res.status(400).send('Invalid credentials');
+      }
 
-    // Check user type and redirect accordingly
+      // Store full user object in session
+      req.session.user = {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          role: user.role,};
 
+      req.session.isLoggedIn = true; // Optional flag to track login status
 
-    // Set session to indicate that the user is logged in
-    req.session.login = true;
-    req.session.username = user.name;
-    const userProfile = await UserProfile.findOne({ user: user._id });
-    req.session.user = {
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      profilePic: userProfile ? userProfile.profilePic : '../images/profile-default.png'
-    };
-    console.log('User logged in:', req.session.user);
-    if (user.role === 'admin') {
-      req.session.isAdmin = true;
-    }
-    req.session.isAuthenticated = true;
-    // Check for upcoming bookings and notifications
-    checkUserBookingsAndNotifications(user._id);
-    // Fetch unread notifications count immediately after login
-    const unreadCount = await Notification.countDocuments({ user: user._id, read: false });
-    req.session.unreadNotificationsCount = unreadCount;
-    res.locals.unreadNotificationsCount = unreadCount;
-    // Default redirect for customer
-    res.redirect('/?refresh=true');
-
+      console.log("User Logged In:", req.session.user);
+      res.redirect('/'); // Redirect to homepage after login
   } catch (err) {
-    console.error(err);
-    res.status(500).send('Error logging in');
+      console.error('Login Error:', err);
+      res.status(500).send('Error logging in');
   }
 });
+
 router.get('/logout', (req, res) => {
   req.session.destroy((err) => {
     if (err) {

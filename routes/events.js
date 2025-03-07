@@ -12,23 +12,25 @@ router.get('/', async (req, res) => {
   try {
     const filter = {};
     if (req.query.category) {
-      filter.category = req.query.category;
+        filter.category = req.query.category;
     }
-    // Only fetch events that are held in the future (upcoming events)
+    // Only fetch upcoming events
     filter.date = { $gte: new Date() };
 
     const events = await Events.find(filter).populate('category');
     const categories = await EventCategory.find().sort({ name: 1 });
+
+    // Ensure user is always passed
     res.render('index', { 
-      events, 
-      categories, 
-      selectedCategory: req.query.category, 
-      user: req.session.user || null 
+        events, 
+        categories, 
+        selectedCategory: req.query.category || null, 
+        user: req.session.user || null // Make sure user is passed
     });
-  } catch (err) {
+} catch (err) {
     console.error('Error fetching events:', err);
     res.status(500).send('Error fetching events');
-  }
+}
 });
 
 
