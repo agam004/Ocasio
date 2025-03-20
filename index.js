@@ -58,6 +58,8 @@ app.get('/set-user', (req, res) => {
 // Middleware to make user available in all routes
 app.use((req, res, next) => {
   res.locals.user = req.session.user || null;
+  console.log("User:", req.session.user);
+  console.log("isAdmin:", req.session.isAdmin);
   next();
 });
 

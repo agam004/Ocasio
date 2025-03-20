@@ -15,16 +15,20 @@
 <body>
 
   <% if (user) { %>
-      <% if (user.role === 'admin') { %>
-          <%- include('admin-nav.ejs') %>
-          <%- include('admin-header.ejs') %>
-      <% } else { %>
-          <%- include('logged-in-nav.ejs') %>
-          <%- include('logged-in-header.ejs') %>
-      <% } %>
+    <% if (user.role === 'admin') { %>
+      <%- include('admin-nav.ejs') %>
+      <%- include('admin-header.ejs') %>
+    <% } else if (user.role === 'organizer') { %>  <!-- Corrected here -->
+      <%- include('organizer-nav.ejs') %>
+      <%- include('organizer-header.ejs') %>
+    <% } else { %>
+      <%- include('logged-in-nav.ejs') %>
+      <%- include('logged-in-header.ejs') %>
+    <% } %>
   <% } else { %>
-      <%- include('navbar.ejs') %>
+    <%- include('navbar.ejs') %>
   <% } %>
+  
 
   <!-- Category Filter Section -->
   <section class="container my-3" id="filter-section">

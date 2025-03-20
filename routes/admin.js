@@ -54,6 +54,7 @@ router.post('/admin/create-event', adminAuth, async (req, res) => {
       });
 
       await newEvent.save();
+      createNotification(req.session.user._id,newEvent.title + " Event Created!", "system");
       res.redirect('/admin/manage-events');
   } catch (error) {
       console.error('Error creating event:', error);
@@ -113,8 +114,10 @@ router.post('/admin/manage-event/:id', adminAuth, async (req, res) => {
       event.location = location;
       event.category = category;
 
+      createNotification(req.session.user._id,event.title + " Event Updated!", "system");
       await event.save();
-      res.redirect('/admin/manage-events');  
+      res.redirect('/');
+        
   } catch (err) {
       console.error('Error updating event:', err);
       res.status(500).send('Error updating event');
@@ -182,6 +185,7 @@ router.get('/admin/bookings', adminAuth, async (req, res) => {
         await eventDoc.save();
       }
     createNotification(booking.user, `Your booking for event "${eventDoc.title}" is cancelled by an Admin!`, "system");
+    createNotification(req.session.user._id,booking.user.name + " booking for " + eventDoc.title + " was canceled", "system");
       await Booking.findByIdAndDelete(bookingId);
       
       res.redirect('/admin/bookings');
@@ -205,8 +209,10 @@ router.get('/admin/bookings', adminAuth, async (req, res) => {
 // Route to display all users
 router.get('/admin/users', adminAuth, async (req, res) => {
     try {
+      
       const users = await User.find().select('name email role isApproved');
-        res.render('admin-users', { users, user: req.session.user });
+      const adminCount = await User.countDocuments({ role: 'admin' });
+        res.render('admin-users', { users, user: req.session.user, adminCount});
     } catch (err) {
         console.error('Error fetching users:', err);
         res.status(500).send('Error fetching users');
@@ -217,17 +223,12 @@ router.get('/admin/users', adminAuth, async (req, res) => {
 router.post('/admin/users/:id/change-role', async (req, res) => {
   try {
       const { role } = req.body;
-
-      // Prevent demoting an Admin if they are the last one
-      const adminCount = await User.countDocuments({ role: 'admin' });
-      if (adminCount === 1 && role !== 'admin') {
-          return res.status(400).send("At least one admin must remain.");
-      }
-
-      // If user is promoted to Organizer, mark them as pending approval
       const updateFields = { role };
       if (role === 'organizer') {
-          updateFields.isApproved = true; // Set approval pending
+          updateFields.isApproved = true; 
+      }
+      if (role === 'customer') {
+          updateFields.isApproved = false;
       }
 
       await User.findByIdAndUpdate(req.params.id, updateFields);

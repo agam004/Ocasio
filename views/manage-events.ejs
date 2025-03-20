@@ -12,7 +12,18 @@
 </head>
 
 
-<%- include('admin-nav.ejs') %>  <!-- Admin Navigation Bar -->
+<% if (user) { %>
+  <% if (user.role === 'admin') { %>
+    <%- include('admin-nav.ejs') %>
+  <% } else if (user.role === 'organizer') { %>  <!-- Added condition for organizer -->
+    <%- include('organizer-nav.ejs') %>
+  <% } else { %>
+    <%- include('logged-in-nav.ejs') %>
+  <% } %>
+<% } else { %>
+  <%- include('navbar.ejs') %>
+<% } %>
+  <!-- Admin Navigation Bar -->
 
 <div class="container mt-4">
   <h2>Manage Events</h2>
@@ -32,13 +43,20 @@
           <td><%= event.title %></td>
           <td><%= new Date(event.date).toLocaleDateString('en-US', { timeZone: 'UTC' }) %></td>
           <td>
-            <form action="/admin/manage-event/<%= event._id %>" method="POST" class="d-inline">
-              <input type="hidden" name="_method" value="DELETE">
-              <button type="submit" class="btn btn-danger">Delete</button>
-            </form>
-            <a href="/event/<%= event._id %>" class="btn btn-primary">View</a>
-            <a href="/admin/manage-event/<%= event._id %>" class="btn btn-warning">Edit</a>
-        </tr>
+            <% if (new Date(event.date) < new Date()) { %>
+              <!-- Event already held: Only View Details button -->
+              <a href="/past-event/<%= event._id %>" class="btn btn-secondary">View Details</a>
+            <% } else { %>
+              <!-- Upcoming event: Show View, Edit, Delete -->
+              <form action="/admin/manage-event/<%= event._id %>" method="POST" class="d-inline">
+                <input type="hidden" name="_method" value="DELETE">
+                <button type="submit" class="btn btn-danger">Delete</button>
+              </form>
+              <a href="/event/<%= event._id %>" class="btn btn-primary">View</a>
+              <a href="/admin/manage-event/<%= event._id %>" class="btn btn-warning">Edit</a>
+            <% } %>
+          </td>
+          
       <% }) %>
     </tbody>
   </table>

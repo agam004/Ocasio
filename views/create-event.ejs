@@ -8,13 +8,24 @@
     <link rel="shortcut icon" href="https://res.cloudinary.com/dehhnip92/image/upload/v1740858902/Occasio_o3cgzl.png" type="image/x-icon">
 </head>
 <body>
-    <%- include('admin-nav.ejs') %>
+  <% if (user) { %>
+    <% if (user.role === 'admin') { %>
+      <%- include('admin-nav.ejs') %>
+    <% } else if (user.role === 'organizer') { %>  <!-- Added condition for organizer -->
+      <%- include('organizer-nav.ejs') %>
+    <% } else { %>
+      <%- include('logged-in-nav.ejs') %>
+    <% } %>
+  <% } else { %>
+    <%- include('navbar.ejs') %>
+  <% } %>
+  
 
     <div class="container mt-5">
         <div class="row justify-content-center">
           <div class="col-md-6">
             <h2 class="text-center mb-4">Create a New Event</h2>
-            <form action="/admin/create-event" method="POST">
+            <form action="<%= user && user.role === 'admin' ? '/admin/create-event' : '/create-event' %>" method="POST">
               <!-- Event Title -->
               <div class="mb-3">
                 <label for="title" class="form-label">Event Title</label>

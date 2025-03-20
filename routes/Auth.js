@@ -35,7 +35,9 @@ router.post('/signup', async (req, res) => {
       name,
       email,
       password,  // storing plain text password
-      role: role || 'customer'
+      role: role || 'customer',
+      isApproved: role === 'admin' ?
+        true : false  // Automatically approve admin users
     });
 
     await newUser.save();
@@ -52,7 +54,7 @@ router.post('/signup', async (req, res) => {
     });
     await newProfile.save();
 
-    
+    res.redirect('/login'); // Redirect to login page after signup
   } catch (err) {
     console.error(err);
     res.status(500).send('Error creating user');
@@ -86,10 +88,18 @@ router.post('/login', async (req, res) => {
           email: user.email,
           role: user.role,};
 
-      req.session.isLoggedIn = true; // Optional flag to track login status
+      req.session.isLoggedIn = true;
+      if(user.role === 'admin')
+        req.session.isAdmin = true;
 
       console.log("User Logged In:", req.session.user);
-      res.redirect('/'); // Redirect to homepage after login
+      // Fetch unread notifications count immediately after login
+      checkUserBookingsAndNotifications(user._id);
+    const unreadCount = await Notification.countDocuments({ user: user._id, read: false });
+    req.session.unreadNotificationsCount = unreadCount;
+    res.locals.unreadNotificationsCount = unreadCount;
+      
+      res.redirect('/?refresh=true');// Redirect to homepage after login
   } catch (err) {
       console.error('Login Error:', err);
       res.status(500).send('Error logging in');

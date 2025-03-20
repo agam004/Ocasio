@@ -9,13 +9,15 @@
     <link rel="stylesheet" href="/css/index.css">
 </head>
 <% if (user) { %>
-    <% if (user.role === 'admin') { %>
-        <%- include('admin-nav.ejs') %>
-    <% } else { %>
-        <%- include('logged-in-nav.ejs') %>
-    <% } %>
+  <% if (user.role === 'admin') { %>
+    <%- include('admin-nav.ejs') %>
+  <% } else if (user.role === 'organizer') { %>  <!-- Added condition for organizer -->
+    <%- include('organizer-nav.ejs') %>
+  <% } else { %>
+    <%- include('logged-in-nav.ejs') %>
+  <% } %>
 <% } else { %>
-    <%- include('navbar.ejs') %>
+  <%- include('navbar.ejs') %>
 <% } %>
 
 <!-- Contact Section -->

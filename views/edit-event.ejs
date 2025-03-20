@@ -33,7 +33,18 @@
     </style>
 </head>
 <body>
-  <%- include('admin-nav.ejs') %>  <!-- Admin Navigation Bar -->
+  <% if (user) { %>
+    <% if (user.role === 'admin') { %>
+      <%- include('admin-nav.ejs') %>
+    <% } else if (user.role === 'organizer') { %>  <!-- Added condition for organizer -->
+      <%- include('organizer-nav.ejs') %>
+    <% } else { %>
+      <%- include('logged-in-nav.ejs') %>
+    <% } %>
+  <% } else { %>
+    <%- include('navbar.ejs') %>
+  <% } %>
+  
 
 <div class="container mt-4 mb-4">
   <div class="event-form-container">

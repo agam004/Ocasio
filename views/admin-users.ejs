@@ -23,6 +23,7 @@
             <th>Email</th>
             <th>Role</th>
             <th>Actions</th>
+            <th>Pending Approvals</th>
           </tr>
         </thead>
         <tbody>
@@ -32,12 +33,15 @@
               <td><%= user.email %></td>
               <td>
                 <form action="/admin/users/<%= user._id %>/change-role" method="POST" class="d-inline">
-                    <select name="role" class="form-select d-inline w-auto" onchange="this.form.submit()">
-                      <option value="customer" <%= user.role === 'customer' ? 'selected' : '' %>>Customer</option>
-                      <option value="organizer" <%= user.role === 'organizer' ? 'selected' : '' %>>Organizer</option>
-                      <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Admin</option>
-                    </select>
-                  </form>
+                  <select name="role" class="form-select d-inline w-auto"
+                          onchange="this.form.submit()"
+                          <%= (user.role === 'admin' && adminCount === 1) ? 'disabled' : '' %>>
+                    <option value="customer" <%= user.role === 'customer' ? 'selected' : '' %>>Customer</option>
+                    <option value="organizer" <%= user.role === 'organizer' ? 'selected' : '' %>>Organizer</option>
+                    <option value="admin" <%= user.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                  </select>
+                </form>
+                
                   
               </td>
               <td>
@@ -52,10 +56,10 @@
                 <% } %>
               </td>
               <td>
-                <%= user.role %>
                 <% if (user.role === 'organizer' && !user.isApproved) { %>
                   <form action="/admin/approve-organizer/<%= user._id %>" method="POST" class="d-inline">
-                    <button type="submit" class="btn btn-success btn-sm">Approve</button>
+                    <button type="submit" value="approve" class="btn btn-success btn-sm">Approve</button>
+                    <button type="submit" value="decline" class="btn btn-success btn-sm">Approve</button>
                   </form>
                 <% } %>
               </td>

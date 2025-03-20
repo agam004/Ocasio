@@ -8,7 +8,18 @@
   <link rel="shortcut icon" href="https://res.cloudinary.com/dehhnip92/image/upload/v1740858902/Occasio_o3cgzl.png" type="image/x-icon">
 </head>
 <body>
-  <%- include('admin-nav.ejs') %>
+  <% if (user) { %>
+    <% if (user.role === 'admin') { %>
+      <%- include('admin-nav.ejs') %>
+    <% } else if (user.role === 'organizer') { %>  <!-- Added condition for organizer -->
+      <%- include('organizer-nav.ejs') %>
+    <% } else { %>
+      <%- include('logged-in-nav.ejs') %>
+    <% } %>
+  <% } else { %>
+    <%- include('navbar.ejs') %>
+  <% } %>
+  
   
   <div class="container mt-5">
     <h2 class="mb-4">Manage All Bookings</h2>

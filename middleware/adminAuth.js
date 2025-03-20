@@ -1,6 +1,6 @@
 module.exports = (req, res, next) => {
     // Check if the user is logged in and is an admin
-    if (req.session.isAdmin) {
+    if (req.session.user.role == 'admin' || req.session.user.role == 'organizer') {
         return next();  // Proceed to the next route handler
     }
     
