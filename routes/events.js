@@ -77,7 +77,7 @@ router.get('/past-event/:id', adminAuth, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
-router.get('/create-event', async (req, res) => {
+router.get('/create-event', adminAuth.isAuthenticated,async (req, res) => {
     try {
         const categories = await EventCategory.find().sort({ name: 1 }); // Fetch categories
         res.render("create-event", { categories, user: req.session.user });
@@ -86,14 +86,14 @@ router.get('/create-event', async (req, res) => {
         res.status(500).send("Error loading event creation page");
     }
 });
-router.post('/create-event', async (req, res) => {
+router.post('/create-event', adminAuth,async (req, res) => {
     try {
         console.log("User in create event:", req.session.user);
         if (!req.session.user || req.session.user.role !== 'organizer') {
             return res.status(403).send('Unauthorized');
         }
 
-        const { title, description, dateTime, imageUrl, capacity, price, location, category } = req.body;
+        var { title, description, dateTime, imageUrl, capacity, price, location, category } = req.body;
         const localDate = new Date(dateTime);
         const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
         if (!title || !description || !dateTime || !capacity || !price || !location || !category) {

@@ -2,7 +2,7 @@ const express = require('express');
 const Booking = require('../models/Booking');
 const router = express.Router();
 const Event = require('../models/Events');
-const User = require('../models/User'); 
+const User = require('../models/User');
 const Notification = require('../models/Notification');
 const createNotification = require('../middleware/notification');
 const isAuthenticated = require('../middleware/adminAuth');
@@ -50,7 +50,7 @@ router.post('/cancel-booking', async (req, res) => {
 router.post('/book-event/:eventId', async (req, res) => {
   const { numTickets } = req.body;
   const { eventId } = req.params;
-  
+
   if (!numTickets || numTickets < 1) {
     return res.status(400).json({ error: 'Number of tickets must be greater than 0' });
   }
@@ -61,13 +61,13 @@ router.post('/book-event/:eventId', async (req, res) => {
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
     }
-    
-    const user = req.session.user; 
+
+    const user = req.session.user;
 
     if (!user) {
       return res.status(401).json({ error: 'User not authenticated' });
     }
-    
+
     if (event.capacity - event.booked < numTickets) {
       return res.status(400).json({ error: 'Not enough tickets available' });
     }
@@ -110,7 +110,7 @@ router.get('/book-event/:eventId', async (req, res) => {
     // Check if the user already has a booking for this event
     const existingBooking = await Booking.findOne({ user: userId, event: eventId });
 
-    res.render('book-event', { 
+    res.render('book-event', {
       event,
       userBooking: existingBooking,
       user: req.session.user // If user is logged in, send user info for display
@@ -129,26 +129,26 @@ router.get('/bookings', async (req, res) => {
     }
 
     const userId = req.session.user._id;
-    const bookings = await Booking.find({ user: userId }).populate('event'); 
-    
+    const bookings = await Booking.find({ user: userId }).populate('event');
+
     // Format data for rendering
     const formattedBookings = bookings.map(booking => {
       const eventDate = new Date(booking.event.date);
       const now = new Date();
       const isPastEvent = eventDate < now; // Check if the event has already happened
-  
+
       return {
-          _id: booking._id,
-          numTickets: booking.numTickets,
-          event: {
-              title: booking.event.title,
-              date: booking.event.date,
-              eventId: booking.event._id
-          },
-          isPastEvent, // Add the past event status
-          reviewSubmitted: booking.reviewSubmitted // Check if the review is already submitted
+        _id: booking._id,
+        numTickets: booking.numTickets,
+        event: {
+          title: booking.event.title,
+          date: booking.event.date,
+          eventId: booking.event._id
+        },
+        isPastEvent, // Add the past event status
+        reviewSubmitted: booking.reviewSubmitted // Check if the review is already submitted
       };
-  });
+    });
 
     res.render('bookings', { bookings: formattedBookings, user: req.session.user });
   } catch (err) {

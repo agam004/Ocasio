@@ -1,4 +1,3 @@
-// utils/bookingNotifications.js
 const Booking = require('../models/Booking');
 const createNotification = require('../middleware/notification');
 

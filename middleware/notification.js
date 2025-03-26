@@ -1,4 +1,4 @@
-const Notification = require('../models/Notification'); // Adjust the path as needed
+const Notification = require('../models/Notification');
 
 function createNotification(userId, message, type = 'system') {
   const newNotification = new Notification({
