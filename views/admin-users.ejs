@@ -58,8 +58,8 @@
               <td>
                 <% if (user.role === 'organizer' && !user.isApproved) { %>
                   <form action="/admin/approve-organizer/<%= user._id %>" method="POST" class="d-inline">
-                    <button type="submit" value="approve" class="btn btn-success btn-sm">Approve</button>
-                    <button type="submit" value="decline" class="btn btn-success btn-sm">Approve</button>
+                    <button type="submit" name="action" value="approve" class="btn btn-success btn-sm">Approve</button>
+                    <button type="submit" name="action" value="decline" class="btn btn-warning btn-sm">Decline</button>
                   </form>
                 <% } %>
               </td>

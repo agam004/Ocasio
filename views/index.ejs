@@ -18,7 +18,7 @@
     <% if (user.role === 'admin') { %>
       <%- include('admin-nav.ejs') %>
       <%- include('admin-header.ejs') %>
-    <% } else if (user.role === 'organizer') { %>  <!-- Corrected here -->
+    <% } else if (user.role === 'organizer' && user.isApproved) { %>  
       <%- include('organizer-nav.ejs') %>
       <%- include('organizer-header.ejs') %>
     <% } else { %>

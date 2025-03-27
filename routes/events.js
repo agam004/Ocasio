@@ -1,5 +1,6 @@
 // routes/events.js
 const express = require('express');
+const User = require('../models/User');
 const router = express.Router();
 const Events = require('../models/Events');
 const Booking = require('../models/Booking');
@@ -20,12 +21,16 @@ router.get('/', async (req, res) => {
         const events = await Events.find(filter).populate('category');
         const categories = await EventCategory.find().sort({ name: 1 });
 
-        // Ensure user is always passed
+        let user = null;
+        if (req.session.user) {
+            user = await User.findById(req.session.user._id);
+        }
+
         res.render('index', {
             events,
             categories,
             selectedCategory: req.query.category || null,
-            user: req.session.user || null // Make sure user is passed
+            user
         });
     } catch (err) {
         console.error('Error fetching events:', err);
@@ -47,10 +52,13 @@ router.get('/event/:id', async (req, res) => {
         if (req.session.user) {
             userBooking = await Booking.findOne({ user: req.session.user._id, event: event._id });
         }
-
+        let user = null;
+        if (req.session.user) {
+            user = await User.findById(req.session.user._id);
+        }
         res.render('event', {
             event,
-            user: req.session.user || null,
+            user,
             userBooking
         });
     } catch (err) {
@@ -77,7 +85,7 @@ router.get('/past-event/:id', adminAuth, async (req, res) => {
         res.status(500).send('Server error');
     }
 });
-router.get('/create-event', adminAuth.isAuthenticated,async (req, res) => {
+router.get('/create-event', adminAuth.isAuthenticated, async (req, res) => {
     try {
         const categories = await EventCategory.find().sort({ name: 1 }); // Fetch categories
         res.render("create-event", { categories, user: req.session.user });
@@ -86,7 +94,7 @@ router.get('/create-event', adminAuth.isAuthenticated,async (req, res) => {
         res.status(500).send("Error loading event creation page");
     }
 });
-router.post('/create-event', adminAuth,async (req, res) => {
+router.post('/create-event', adminAuth, async (req, res) => {
     try {
         console.log("User in create event:", req.session.user);
         if (!req.session.user || req.session.user.role !== 'organizer') {

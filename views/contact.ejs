@@ -11,7 +11,7 @@
 <% if (user) { %>
   <% if (user.role === 'admin') { %>
     <%- include('admin-nav.ejs') %>
-  <% } else if (user.role === 'organizer') { %>  <!-- Added condition for organizer -->
+  <% } else if (user.role === 'organizer' && user.isApproved) { %>  <!-- Added condition for organizer -->
     <%- include('organizer-nav.ejs') %>
   <% } else { %>
     <%- include('logged-in-nav.ejs') %>

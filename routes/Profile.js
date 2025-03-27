@@ -54,8 +54,21 @@ router.post('/profile', isAuthenticated, async (req, res) => {
   });
   router.post('/apply-organizer', isAuthenticated, async (req, res) => {
     try {
-        await User.findByIdAndUpdate(req.session.user._id, { role: 'organizer', isApproved: false });
-        res.redirect('/profile');
+      const updatedUser = await User.findByIdAndUpdate(
+        req.session.user._id,
+        { role: 'organizer', isApproved: false },
+        { new: true }
+    );
+    req.session.user = updatedUser;
+    createNotification(req.session.user._id, 'Your organizer application has been received', 'system');
+    // Fetch all admins
+    const admins = await User.find({ role: 'admin' });
+
+    // Notify each admin
+    admins.forEach(admin => {
+        createNotification(admin._id, `${updatedUser.name || 'A user'} has applied to become an organizer.`, 'system');
+    });
+    res.redirect('/profile');
     } catch (err) {
         console.error('Error applying for organizer:', err);
         res.status(500).send('Error processing request');
@@ -65,8 +78,17 @@ router.post('/profile', isAuthenticated, async (req, res) => {
 // Route for admin to approve organizers
 router.post('/admin/approve-organizer/:id', async (req, res) => {
     try {
+      const { action } = req.body;
+
+    if (action === 'approve') {
         await User.findByIdAndUpdate(req.params.id, { isApproved: true });
-        res.redirect('/admin/users');
+    } else if (action === 'decline') {
+        await User.findByIdAndUpdate(req.params.id, { isApproved: false , role: 'customer'});
+        createNotification(req.params.id, 'Your organizer application has been declined', 'system');
+
+    }
+
+    res.redirect('/admin/users');
     } catch (err) {
         console.error('Error approving organizer:', err);
         res.status(500).send('Error approving organizer');

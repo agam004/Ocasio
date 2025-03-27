@@ -15,7 +15,7 @@
   <% if (user) { %>
     <% if (user.role === 'admin') { %>
       <%- include('admin-nav.ejs') %>
-    <% } else if (user.role === 'organizer') { %>  <!-- Added condition for organizer -->
+    <% } else if (user.role === 'organizer' && user.isApproved) { %>  <!-- Added condition for organizer -->
       <%- include('organizer-nav.ejs') %>
     <% } else { %>
       <%- include('logged-in-nav.ejs') %>
@@ -114,23 +114,31 @@
       <!-- Booking Button -->
       <div class="mt-4">
         <% if (new Date(event.date) >= new Date()) { %>
-        <% if (userBooking) { %>
-        <a href="/bookings" class="btn btn-success btn-lg">Manage Booking</a>
-        <% } else if (!user) { %>
-        <a href="/login %>" class="btn btn-primary btn-lg">Login to Book Event</a>
-        <% }else if (user && user.role === 'customer') { %>
-        <a href="/book-event/<%= event._id %>" class="btn btn-primary btn-lg">Book Event</a>
-        <% } else if (user && user.role === 'admin') { %>
-        <a href="/admin/manage-event/<%= event._id %>" class="btn btn-primary btn-lg">Manage Event</a>
-        <% } else if (user && user.role === 'organizer' && event.organizer && event.organizer._id.toString() === user._id.toString()) { %>
-        <a href="/admin/manage-event/<%= event._id %>" class="btn btn-primary btn-lg">Manage Event</a>
-        <% } else if (user && user.role === 'organizer') { %>
-        <a href="/login" class="btn btn-primary btn-lg">🔑 Login as customer to Book</a>
-        <% } else { %>
-        <a href="/login" class="btn btn-warning btn-lg">🔑 Login to Book</a>
+            <% const ticketsLeft = event.capacity - event.booked; %>
+            
+            <% if (ticketsLeft <= 0) { %>
+                <p class="text-danger h5">🚫 Event is Full. No tickets available.</p>
+            <% } else if (userBooking) { %>
+                <a href="/bookings" class="btn btn-success btn-lg">Manage Booking</a>
+            <% } else if (!user) { %>
+                <a href="/login" class="btn btn-primary btn-lg">Login to Book Event</a>
+            <% } else if (user && user.role === 'customer') { %>
+                <a href="/book-event/<%= event._id %>" class="btn btn-primary btn-lg">Book Event</a>
+            <% } else if (user && user.role === 'admin') { %>
+                <a href="/admin/manage-event/<%= event._id %>" class="btn btn-primary btn-lg">Manage Event</a>
+            <% } else if (user && user.role === 'organizer') { %>
+                <% if (!user.isApproved) { %>
+                    <p class="text-warning">🚫 Your organizer account is not approved yet. You cannot manage or book events.</p>
+                <% } else if (event.organizer && event.organizer._id.toString() === user._id.toString()) { %>
+                    <a href="/admin/manage-event/<%= event._id %>" class="btn btn-primary btn-lg">Manage Event</a>
+                <% } else { %>
+                    <p class="text-info">ℹ️ You are logged in as an organizer. Switch to a customer account to book this event.</p>
+                <% } %>
+            <% } else { %>
+                <a href="/login" class="btn btn-warning btn-lg">🔑 Login to Book</a>
+            <% } %>
         <% } %>
-        <% } %>
-      </div>
+    </div>
 
     </div>
   </section>
