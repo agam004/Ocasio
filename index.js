@@ -93,8 +93,10 @@ const notificationRoutes = require('./routes/notifications');
 const eventCategoryRoutes = require('./routes/eventCategories');
 const profileRoutes = require('./routes/Profile');
 const reviewRoutes = require('./routes/review');
+const methodOverride = require('method-override');
 
 
+app.use(methodOverride('_method')); 
 app.use('/', bookingRoutes);
 app.use('/', authRoutes);
 app.use('/', adminRoutes);

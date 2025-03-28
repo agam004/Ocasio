@@ -29,17 +29,18 @@ router.post('/signup', async (req, res) => {
       return res.status(400).send('Invalid Admin PIN');
     }
 
-    // Create new user with plain text password
+    // Create new user
     const newUser = new User({
       name,
       email,
-      password,  // storing plain text password
+      password,  // Note: hashing is missing here
       role: role || 'customer',
-      isApproved: role === 'admin' ?
-        true : false  // Automatically approve admin users
+      isApproved: role === 'admin' ? true : false
     });
 
     await newUser.save();
+
+    // Create user profile
     const newProfile = new UserProfile({
       user: newUser._id,
       bio: '',
@@ -51,16 +52,23 @@ router.post('/signup', async (req, res) => {
         instagram: ''
       }
     });
-    await newProfile.save();
 
-    res.redirect('/login'); // Redirect to login page after signup
+    await newProfile.save();
+    await new Notification({
+      user: newUser._id,
+      message: '🎉 Welcome to Occasio!, Consider completing your profile. <a href="/profile">Click here</a>',
+      type: 'system',
+      isRead: false,
+      timestamp: new Date()
+    }).save();
+    console.log('Notification saved');
+
+    res.redirect('/login');
   } catch (err) {
     console.error(err);
     res.status(500).send('Error creating user');
   }
 });
-
-
 
 router.get('/login', (req, res) => {
   res.render('login'); // Assumes you have a views/login.ejs file

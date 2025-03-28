@@ -122,6 +122,30 @@ router.post('/admin/manage-event/:id', adminAuth, async (req, res) => {
   }
 });
 
+
+router.post('/admin/delete-event/:id', adminAuth, async (req, res) => {
+  try {
+    const event = await Events.findByIdAndDelete(req.params.id);
+    if (!event) {
+      return res.status(404).send('Event not found');
+    }
+
+    // Optional: Notify organizer if deleted by admin
+    await createNotification(
+      req.session.user._id,
+      `Event "${event.title}" Deleted`,
+      'This event has been removed from the system.',
+      'system'
+    );
+
+    res.redirect('/');
+  } catch (err) {
+    console.error('Error deleting event:', err);
+    res.status(500).send('Error deleting event');
+  }
+});
+
+
 // To see bookings for all events by all users
 router.get('/admin/bookings', adminAuth, async (req, res) => {
   try {

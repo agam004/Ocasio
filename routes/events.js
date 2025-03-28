@@ -7,6 +7,8 @@ const Booking = require('../models/Booking');
 const EventCategory = require('../models/EventCategory');
 const Review = require('../models/Review');
 const adminAuth = require('../middleware/adminAuth');
+const createNotification = require('../middleware/notification');
+
 
 // Route to display all events on the homepage
 router.get('/', async (req, res) => {
@@ -116,6 +118,21 @@ router.post('/create-event', adminAuth, async (req, res) => {
         });
 
         await newEvent.save();
+
+        await createNotification(
+            req.session.user._id,
+            `Your event "${title}" has been successfully submitted.`,
+            'system'
+        );
+
+        const admins = await User.find({ role: 'admin' });
+        admins.forEach(async (admin) => {
+            await createNotification(
+                admin._id,
+                `Organizer <strong>${req.session.user.name}</strong> created a new event: "${title}".`,
+                'system'
+            );
+        });
         res.redirect('/my-events');
     } catch (err) {
         console.error('Error creating event:', err);

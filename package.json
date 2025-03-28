@@ -17,6 +17,7 @@
     "emailjs": "^4.0.3",
     "express": "^4.21.2",
     "express-session": "^1.18.1",
+    "method-override": "^3.0.0",
     "mongoose": "^8.10.0",
     "nodemon": "^3.1.9",
     "source-code": "file:"
