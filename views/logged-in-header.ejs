@@ -1,8 +1,64 @@
-<header class="hero bg-dark text-white text-center py-5">
-    <div class="container">
-        <h1 class="display-4">Welcome, <%= user.name %>!</h1>
-        <p class="lead">Discover and book exciting events happening near you.</p>
-        <a href="#featured-events" class="btn btn-primary btn-lg">Explore Events</a>
-        <a href="/bookings" class="btn btn-outline-light btn-lg">My Bookings</a>
+<header class="hero bg-dark text-white text-center py-5 position-relative">
+    <div class="container position-relative">
+      <h1 class="display-4">Welcome, <%= user.name %>!</h1>
+      <p class="lead">Discover and book exciting events happening near you.</p>
+      <a href="#featured-events" class="btn btn-primary btn-lg">Explore Events</a>
+      <a href="/bookings" class="btn btn-outline-light btn-lg">My Bookings</a>
+  
+      <% if (user && user.role === 'customer') { %>
+        <div class="fancy-organizer-promo">
+          <div class="promo-content">
+            <span class="emoji">✨</span>
+            <p><strong>Become an Organizer!</strong><br>Host your own events.</p>
+            <a href="/profile#organizer" class="btn btn-outline-light btn-sm mt-2">Apply Now</a>
+          </div>
+        </div>
+      <% } %>
     </div>
-</header>
+  </header>
+  
+
+  <style>
+    .fancy-organizer-promo {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        background: rgba(0, 0, 0, 0.8);
+        border: 2px solid #00d5ff;
+        padding: 15px 20px;
+        border-radius: 12px;
+        width: 240px;
+        color: #fff;
+        text-align: center;
+        box-shadow: 0 0 20px rgba(0, 213, 255, 0.4);
+        animation: float-promo 3s ease-in-out infinite;
+        z-index: 100;
+    }
+    
+    .promo-content p {
+        font-size: 13px;
+        margin: 10px 0 5px;
+    }
+    
+    .promo-content .emoji {
+        font-size: 20px;
+        display: block;
+    }
+    
+    @keyframes float-promo {
+        0% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+        100% { transform: translateY(0); }
+    }
+    
+    /* Optional: Mobile responsive adjustment */
+    @media (max-width: 768px) {
+      .fancy-organizer-promo {
+        position: static;
+        margin-top: 20px;
+        animation: none;
+        width: 100%;
+      }
+    }
+    </style>
+    
