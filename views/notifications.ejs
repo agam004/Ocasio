@@ -10,13 +10,15 @@
 <body>
   <% if (user) { %>
     <% if (user.role === 'admin') { %>
-        <%- include('admin-nav.ejs') %>
+      <%- include('admin-nav.ejs') %>
+    <% } else if (user.role === 'organizer' && user.isApproved) { %>  <!-- Added condition for organizer -->
+      <%- include('organizer-nav.ejs') %>
     <% } else { %>
-        <%- include('logged-in-nav.ejs') %>
+      <%- include('logged-in-nav.ejs') %>
     <% } %>
-<% } else { %>
+  <% } else { %>
     <%- include('navbar.ejs') %>
-<% } %>
+  <% } %>
   
   <div class="container mt-5">
     <h2>Your Notifications</h2>
