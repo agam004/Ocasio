@@ -1,5 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
+  <style>
+    .profile-img {
+  width: 250px;
+  height: 250px;
+  object-fit: cover;
+  border-radius: 50%;
+  box-shadow: 0 0 0 transparent;
+  transition: box-shadow 0.3s ease;
+}
+
+.profile-img:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+  </style>
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,23 +43,18 @@
   <div class="container">
     <div class="row">
       <div class="col-md-6">
-        <h2>About Us</h2>
-        <p>Welcome to Occasio! We are passionate about bringing amazing events to you, helping you discover experiences that make life exciting. Whether you're a music lover, an adventurer, or someone who enjoys unique experiences, we have something for you.</p>
-        <p>Our platform is designed to provide seamless event discovery, booking, and management. Join us and explore the world of events like never before!</p>
-        <p>Meet Our Team :
+        <h2>About The Project</h2>
+        <p>Welcome to Occasio — a personal project born from a passion for events and unforgettable experiences. Whether it's music, adventure, or something unique and offbeat, this platform is built to bring those moments closer to you.</p> <p>Occasio is my individual effort to create a smooth and intuitive way to discover, book, and manage events. It's a work-in-progress fueled by curiosity, creativity, and the desire to make event exploration more accessible.</p> <p>Developed by :</p>
           <ul>
-            <li><a href="https://www.linkedin.com/in/guragampreet-singh/" target="_blank">Guragampreet Singh (Team Lead)</a></li>
-            <li>Prabhnoor Kaur</li>
-            <li>Elaf Al Muhalhal</li>
-            <li>Vivek Vasantbhai Senjaliya</li>
+            <li><a href="https://www.linkedin.com/in/guragampreet-singh/" target="_blank">Guragampreet Singh</a></li>
           </ul>
         </p>
       </div>
-      <div class="col-md-6">
-        <img src="https://img.freepik.com/free-photo/social-integration-working-team_23-2149341101.jpg?t=st=1739308304~exp=1739311904~hmac=5803a3422132200656b69ba62639e9196fd34595c352941390402ab8ae666548&w=1380" alt="About Us" class="img-fluid">
-      </div>
-    </div>
-  </div>
+      <div class="col-md-6 text-center">
+  <img src="https://guragam.netlify.app/Assets/Images/guragam.jpg" alt="About" class="img-fluid profile-img">
+</div>
+
+    </div>  </div>
 </section>
 
 <%- include('footer.ejs') %>
